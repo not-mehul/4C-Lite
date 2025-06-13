@@ -291,6 +291,11 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
   const potentialMatches = results.filter((r) => r.matchType === 'potential');
   const noMatches = results.filter((r) => r.matchType === 'none');
 
+  // Calculate device counts for each match type
+  const exactMatchDeviceCount = exactMatches.reduce((sum, match) => sum + match.count, 0);
+  const potentialMatchDeviceCount = potentialMatches.reduce((sum, match) => sum + match.count, 0);
+  const noMatchDeviceCount = noMatches.reduce((sum, match) => sum + match.count, 0);
+
   const downloadResults = () => {
     const csvContent = [
       [
@@ -444,12 +449,12 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
         <div className="flex items-center justify-center space-x-2 text-sm text-blue-600 dark:text-blue-400">
           <Filter className="w-4 h-4" />
           <span>
-            Camera Data has been cleaned to remove IP addresses, MAC addresses, dates, and common words
+            Camera Data has been cleaned to remove IP addresses, MAC addresses, dates, and common words.
           </span>
         </div>
       </div>
 
-      {/* Summary Cards */}
+      {/* Enhanced Summary Cards */}
       <div className="grid md:grid-cols-4 gap-6 mb-8">
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 transition-colors duration-300">
           <div className="flex items-center justify-between">
@@ -458,6 +463,11 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
               <p className="text-2xl font-bold text-gray-900 dark:text-white">
                 {results.length.toLocaleString()}
               </p>
+              <div className="mt-2 space-y-1">
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  Total {selection.countColumn || 'Devices'}: {totalCount.toLocaleString()}
+                </p>
+              </div>
             </div>
             <BarChart className="w-8 h-8 text-blue-600 dark:text-blue-400" />
           </div>
@@ -472,9 +482,14 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
               <p className="text-2xl font-bold text-green-600 dark:text-green-400">
                 {exactMatches.length.toLocaleString()}
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
-                {((exactMatches.length / results.length) * 100).toFixed(1)}%
-              </p>
+              <div className="mt-2 space-y-1">
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  {((exactMatches.length / results.length) * 100).toFixed(1)}% of models
+                </p>
+                <p className="text-xs text-green-600 dark:text-green-400 font-medium">
+                  {exactMatchDeviceCount.toLocaleString()} {selection.countColumn || 'devices'} ({((exactMatchDeviceCount / totalCount) * 100).toFixed(1)}%)
+                </p>
+              </div>
             </div>
             <CheckCircle className="w-8 h-8 text-green-600 dark:text-green-400" />
           </div>
@@ -489,9 +504,14 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
               <p className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
                 {potentialMatches.length.toLocaleString()}
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
-                {((potentialMatches.length / results.length) * 100).toFixed(1)}%
-              </p>
+              <div className="mt-2 space-y-1">
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  {((potentialMatches.length / results.length) * 100).toFixed(1)}% of models
+                </p>
+                <p className="text-xs text-yellow-600 dark:text-yellow-400 font-medium">
+                  {potentialMatchDeviceCount.toLocaleString()} {selection.countColumn || 'devices'} ({((potentialMatchDeviceCount / totalCount) * 100).toFixed(1)}%)
+                </p>
+              </div>
             </div>
             <AlertTriangle className="w-8 h-8 text-yellow-600 dark:text-yellow-400" />
           </div>
@@ -504,9 +524,14 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
               <p className="text-2xl font-bold text-red-600 dark:text-red-400">
                 {noMatches.length.toLocaleString()}
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
-                {((noMatches.length / results.length) * 100).toFixed(1)}%
-              </p>
+              <div className="mt-2 space-y-1">
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  {((noMatches.length / results.length) * 100).toFixed(1)}% of models
+                </p>
+                <p className="text-xs text-red-600 dark:text-red-400 font-medium">
+                  {noMatchDeviceCount.toLocaleString()} {selection.countColumn || 'devices'} ({((noMatchDeviceCount / totalCount) * 100).toFixed(1)}%)
+                </p>
+              </div>
             </div>
             <X className="w-8 h-8 text-red-600 dark:text-red-400" />
           </div>
@@ -654,7 +679,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                           <div className="bg-white dark:bg-gray-800 rounded-lg border border-blue-200 dark:border-blue-700 p-4">
                             <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-3 flex items-center">
                               <Info className="w-4 h-4 text-blue-600 dark:text-blue-400 mr-2" />
-                              Compatibility Details
+                              Verkada Compatibility Details
                             </h4>
                             <div className="grid md:grid-cols-2 gap-4">
                               <div>
@@ -742,7 +767,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
           className="flex items-center justify-center space-x-2 bg-green-600 dark:bg-green-500 text-white px-8 py-3 rounded-lg hover:bg-green-700 dark:hover:bg-green-600 transition-all duration-200 font-medium shadow-sm hover:shadow-md transform hover:scale-105"
         >
           <Download className="w-4 h-4" />
-          <span>Download Report</span>
+          <span>Download Compatibility Report</span>
         </button>
 
         <button

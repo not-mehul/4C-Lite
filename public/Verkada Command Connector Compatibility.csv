@@ -34,6 +34,7 @@ ALIBI Security,NS2015VR,V5.4.5 build 170309,
 ALIBI Security,PV3130R,V5.2.0 build 150508,
 Advidia,A-300,V5.4.20 build 170414,
 Advidia,A-34,V5.3.0 build 151209,
+Advidia,A-37-FW,V5.3.0 build 151209,
 Advidia,A-47,V5.3.0 build 151209,
 Advidia,B-31,A1D-311-V5.13.10-NB,
 Advidia,B-5360-000,A1D-500-V6.12.14-NB,
@@ -48,8 +49,8 @@ Advidia,M-46-FW,IPC_G6107-B0001P87D1806C62,
 Advidia,M-46-FW-V2,GIPC-B6202.7.10.C03830.NB.221018,
 Advidia,M-46-V,GIPC-B6202.7.10.C03830.NB.221018,
 Advidia,M-49-V,GIPC-B6202.7.10.C03830.NB.221018,
-Advidia,M-5360,203.6.11,
-Advidia,M-87-V,203.6.11,
+Advidia,M-5360,203.6.10,
+Advidia,M-87-V,203.6.10,
 Amcrest,IP2M-844E,2.800.0000018.0.R        Build Date 2021-07-08,Under settup > Camera > Video - please select H.264 for both Main Stream and Sub Stream
 Amcrest,IP5M-B1186E,2.880.00AC001.0.R,Under settup > Camera > Video - please select H.264 for both Main Stream and Sub Stream
 Amcrest,IP5M-D1188EW-AI-V3,2.880.00AC001.0.R,Under settup > Camera > Video - please select H.264 for both Main Stream and Sub Stream
@@ -59,6 +60,7 @@ Amcrest,IP8M-FCB2996EW-AI,3.120.00AC000.0.R,Under settup > Camera > Video - plea
 Amcrest,IP8M-T2669E-AI,2.800.00AC001.0.R,Under settup > Camera > Video - please select H.264 for both Main Stream and Sub Stream
 Arecont Vision,AV02CID-200,65362,
 Arecont Vision,AV12176DN,65200,
+Arecont Vision,AV12186DN,65200,
 Arecont Vision,AV12276DN,65210,
 Arecont Vision,AV12375RS,65216,
 Arecont Vision,AV20175DN,65200,
@@ -231,6 +233,7 @@ Axis Communications,M7011,5.40.9.4,
 Axis Communications,M7104,11.10.61,
 Axis Communications,P12/M20,5.40.9.4,
 Axis Communications,P1344,5.40.9,
+Axis Communications,P1354,6.50.5,
 Axis Communications,P1357,6.50.4,
 Axis Communications,P1375,11.10.61,
 Axis Communications,P1377,11.10.61,
@@ -280,10 +283,11 @@ Axis Communications,P3267-LVE,10.12.240,
 Axis Communications,P3268-LVE,12.0.91,
 Axis Communications,P3301,5.40.9.2,
 Axis Communications,P3304,11.10.61,
+Axis Communications,P3343,5.40.4,5.40.4
 Axis Communications,P3344,5.51.7.6,
 Axis Communications,P3346,11.10.61,
 Axis Communications,P3353,6.50.5.8,
-Axis Communications,P3354,5.60.1,
+Axis Communications,P3354,6.50.5.8,
 Axis Communications,P3363,6.50.3.1,
 Axis Communications,P3364,6.50.5.8,
 Axis Communications,P3364-L,6.50.5.7,
@@ -475,13 +479,19 @@ Digital Watchdog,DWC-PVX16W,S2.2.1_2021.03.19,
 Digital Watchdog,DWC-PVX16W4,S2.2.1_2021.03.19,
 Digital Watchdog,DWC-VSBD04Bi,5.1,
 Digital Watchdog,DWC-VSDG04Bi,5.1,
+ENS Security Cameras,IP-5IR4E32,5,
+ENS Security Cameras,IP-5IR5S31,4.2,
+ENS Security Cameras,IP-5VP8S30-3.6,4.2,
 ENVIRO,EC-IRD4-28,GIPC-B6202.5.16.C00826.NB.210826,
-FLIR Systems,CB-3102-01-I,20190130,
+FLIR Systems,CB-3102-01-I,Ariel Gen II Firmware 20190130,
+FLIR Systems,CB-3304-1 1-I,Ariel Gen III Firmware 20170914,
 FLIR Systems,CB-3304-11-I,20190527,
+FLIR Systems,CB-3308-1 1-I,Ariel Gen III Firmware 20170914,
 FLIR Systems,CB-3308-11-I,20220302,
+FLIR Systems,CB-6208-1 1-I,Quasar Gen II Firmware fs20160805NSZ,
 FLIR Systems,CB-6208-11-I,fs20160805NSZ,
-FLIR Systems,CC-3103-01-I,20190130,
-FLIR Systems,CM-3102-01-I,20190130,
+FLIR Systems,CC-3103-01-I,Ariel Gen II Firmware 20190130,
+FLIR Systems,CM-3102-01-I,Ariel Gen II Firmware 20190130,
 FLIR Systems,CM-3308-11-I,20220302,
 FLIR Systems,CM-4221-11-I,dt20161103NSA,
 FLIR Systems,CM-6204-11-I-RO,fs20160805NSZ,
@@ -517,7 +527,7 @@ FLIR Systems,CP-6302-31-I,fs20210930NRS,
 FLIR Systems,DH-390 2MP,v1.0.3.P18,
 FLIR Systems,DH-390 2MP 11400866,v1.0.3.P18,
 FLIR Systems,DNZ30TL2R,2.420.FLIR Systems 08.8.R.2,
-FLIR Systems,DVTel,dt20161103NSA,
+FLIR Systems,DVTel,Latitude VMS 9.2.7,
 FLIR Systems,T4325BN,2.420.FLIR Systems 01.0.R - build: 2015-01-22,
 General,IPEL-F12F-IRW1,2.622.00KL002.0.R,
 GeoVision,GV-BLFC5800,V102_2021_11_03,
@@ -537,109 +547,109 @@ Geovision,GV-FER521,V102_2021_08_10,
 Geovision,GV-FER5701,V102_2021_08_10,
 Geovision,GV-PDR8800,V102_2023_01_09,
 Geovision,GV-TBL4810,V101_2021_08_20,
-Hanwha Techwin,A - PNM-7000VD,1.00_180109,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,A - PNO-A9081R,1.41.04_20201021_R435,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,ANE-L6012R,1.41.02_20220728_R65,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,ANE-L7012L,1.42.01_20230808_R63,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,ANE-L7012R,1.41.00_20220414_R35,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,ANO-L6012R,1.41.00_20220527_R6,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,ANO-L7012R,1.41.04_20230804_R119,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,ANO-L7022R,1.41.00_20220105_R62,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,ANV-L6012R,1.41.16_20231109_R45,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,ANV-L7012R,1.41.00_20220105_R62,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,B - PNM-7000VD,1.00_180109,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,LNV-6012R,1.41.13_20231109_R165,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,PND-A9081RV,2.21.13_20230414_R782,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,PNM-12082RVD,2.22.01_20240103_R165,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,PNM-7002VD,2.22.01_20240103_R165,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,PNM-8082VT,2.01.02_20220318_R210,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,PNM-9000VD,1.32.01_20200825_R198,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,PNM-9020V,4.00_200605,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,PNM-9022V,2.22.00_20231103_R155,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,PNM-9031RV,2.22.01_20231101_R542,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,PNM-9080VQ,2.22.00_20230714_R329,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,PNM-9081VQ,2.22.00_20230714_R329,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,PNM-9085RQZ,2.22.02_20231109_R380,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,PNM-9322VQP,1.33.03_20220420_R128,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,PNM-C12083RVD,2.21.01_20220630_R330,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,PNM-C16083RVQ,23.01.02_20231012_R660,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,PNM-C32083RVQ,2.22.00_20231103_R219,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,PNO-A9081R,1.41.04_20201021_R435,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,PNV-A6081R,2.11.03_20220519_R216,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,PNV-A9081R,2.11.03_20220519_R216,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,QND-6011,1.41.17_20240614_R404,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,QND-6012R1,1.41.16_20231109_R401,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,QND-6021,1.41.16_20231109_R401,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,QND-6082R,1.21.02_20190712_R160,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,QND-6082R1,1.41.17_20240614_R55,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,QND-8010R,1.41.06_20230623_R343,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,QNF-9010,2.11.03_20230509_R444,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,QNO-8010R,1.41.06_20230623_R343,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,QNP-6250,2.11.00_20210607_R144,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,QNP-6320,2.21.04_20230623_R205,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,QNV-6010R,4.01_210706,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,QNV-6082R,1.21.02_20190712_R160,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,QNV-6082R1,1.41.01_20211012_R19,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,QNV-7080R,4.00_200616,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,QNV-7082R,1.41.17_20240614_R174,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,QNV-8010R,1.41.05_20230316_R321,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,QNV-C9083R,2.21.10_20230908_R390,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,SNV-5084,4.00_180627,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,SNV-6013,4.00_180504,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,SNV-6084,4.00_180504,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,SNV-7084,4.00_180504,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,SNV-L6013R,4.00_180504,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,SPE-1610,1.31_200310,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,SPE-1620,2.11.02_20220426_R175,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,TNU-6321,2.01.03_20220712_R117,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,XNB-6003,2.22.04,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,XNB-8003,2.22.04,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,XNB-9003,2.22.04,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,XND-6010,1.40.02_20191024_R405,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,XND-6080RV,2.10.02_20220117_R567,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,XND-6083RV,2.22.04,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,XND-8020F,1.21.11_20181203_R249,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,XND-8020R,2.10.02_20220401_R599,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,XND-8080R,2.10.03,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,XND-8080RV,2.10.03,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,XND-8081RV,2.10.02_20220329_R469,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,XND-8083RV,2.22.04,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,XND-8093RV,2.22.04,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,XND-9083RV,2.22.04,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,XND-C6083RV,2.22.02_20230623_R400,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,XND-C9083RV,2.23.02_20241011_R577,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,XNF-8010R,2.10.04_20230328_R640,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,XNF-8010RV,2.10.04_20230328_R640,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,XNO-6080R,2.10.05_20230516_R685,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,XNO-6083R,2.22.04,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,XNO-6120R,2.10.02_20220117_R551,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,XNO-6123R,2.22.04,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,XNO-8020R,2.10.02_20220401_R586,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,XNO-8083R,2.22.04,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,XNO-9083R,2.11.02_20220705_R186,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,XNO-C8083R,2.23.02_20241011_R577,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,XNP-6320H,2.10.02_20220324_R614,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,XNP-6321H,2.10.02_20220324_R614,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,XNP-C9253R,2.22.03_20231031_R121,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,XNV-6011,2.10.02_20220117_R573,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,XNV-6011W,2.10.02_20220117_R573,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,XNV-6012,2.10.02_20220328_R591,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,XNV-6080R,2.22.01_20240108_R595,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,XNV-6081Z,2.10.02_20220329_R501,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,XNV-6083R,2.22.04,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,XNV-6083RZ,2.22.04,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,XNV-6083Z,2.22.04,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,XNV-6123R,2.22.04,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,XNV-8080R,2.10.02_20220401_R615,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,XNV-8081R,2.10.02_20220329_R469,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,XNV-8083R,2.22.04,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,XNV-8083RZ,2.22.04,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,XNV-8083Z,2.22.04,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,XNV-8093R,2.22.04,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,XNV-9082R,2.23.00_20240416_R579,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,XNV-9083R,2.22.03_20230711_R331,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,XNV-9083RZ,2.22.04,Streaming to multiple connetors simultaneously can cause all streams to stop.
-Hanwha Techwin,XNZ-6320A,2.11.01_20220719_R87,Streaming to multiple connetors simultaneously can cause all streams to stop.
+Hanwha Techwin,A - PNM-7000VD,1.00_180109,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,A - PNO-A9081R,1.41.04_20201021_R435,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,ANE-L6012R,1.41.02_20220728_R65,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,ANE-L7012L,1.42.01_20230808_R63,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,ANE-L7012R,1.41.00_20220414_R35,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,ANO-L6012R,1.41.00_20220527_R6,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,ANO-L7012R,1.41.04_20230804_R119,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,ANO-L7022R,1.41.00_20220105_R62,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,ANV-L6012R,1.41.16_20231109_R45,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,ANV-L7012R,1.41.00_20220105_R62,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,B - PNM-7000VD,1.00_180109,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,LNV-6012R,1.41.13_20231109_R165,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,PND-A9081RV,2.21.13_20230414_R782,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,PNM-12082RVD,2.22.01_20240103_R165,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,PNM-7002VD,2.22.01_20240103_R165,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,PNM-8082VT,2.01.02_20220318_R210,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,PNM-9000VD,1.32.01_20200825_R198,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,PNM-9020V,4.00_200605,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,PNM-9022V,2.22.00_20231103_R155,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,PNM-9031RV,2.22.01_20231101_R542,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,PNM-9080VQ,2.22.00_20230714_R329,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,PNM-9081VQ,2.22.00_20230714_R329,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,PNM-9085RQZ,2.22.02_20231109_R380,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,PNM-9322VQP,1.33.03_20220420_R128,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,PNM-C12083RVD,2.21.01_20220630_R330,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,PNM-C16083RVQ,23.01.02_20231012_R660,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,PNM-C32083RVQ,2.22.00_20231103_R219,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,PNO-A9081R,1.41.04_20201021_R435,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,PNV-A6081R,2.11.03_20220519_R216,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,PNV-A9081R,2.11.03_20220519_R216,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,QND-6011,1.41.17_20240614_R404,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,QND-6012R1,1.41.16_20231109_R401,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,QND-6021,1.41.16_20231109_R401,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,QND-6082R,1.21.02_20190712_R160,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,QND-6082R1,1.41.17_20240614_R55,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,QND-8010R,1.41.06_20230623_R343,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,QNF-9010,2.11.03_20230509_R444,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,QNO-8010R,1.41.06_20230623_R343,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,QNP-6250,2.11.00_20210607_R144,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,QNP-6320,2.21.04_20230623_R205,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,QNV-6010R,4.01_210706,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,QNV-6082R,1.21.02_20190712_R160,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,QNV-6082R1,1.41.01_20211012_R19,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,QNV-7080R,4.00_200616,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,QNV-7082R,1.41.17_20240614_R174,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,QNV-8010R,1.41.05_20230316_R321,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,QNV-C9083R,2.21.10_20230908_R390,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,SNV-5084,4.00_180627,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,SNV-6013,4.00_180504,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,SNV-6084,4.00_180504,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,SNV-7084,4.00_180504,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,SNV-L6013R,4.00_180504,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,SPE-1610,1.31_200310,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,SPE-1620,2.11.02_20220426_R175,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,TNU-6321,2.01.03_20220712_R117,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,XNB-6003,2.22.04,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,XNB-8003,2.22.04,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,XNB-9003,2.22.04,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,XND-6010,1.40.02_20191024_R405,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,XND-6080RV,2.10.02_20220117_R567,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,XND-6083RV,2.22.04,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,XND-8020F,1.21.11_20181203_R249,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,XND-8020R,2.10.02_20220401_R599,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,XND-8080R,2.10.03,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,XND-8080RV,2.10.03,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,XND-8081RV,2.10.02_20220329_R469,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,XND-8083RV,2.22.04,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,XND-8093RV,2.22.04,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,XND-9083RV,2.22.04,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,XND-C6083RV,2.22.02_20230623_R400,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,XND-C9083RV,2.23.02_20241011_R577,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,XNF-8010R,2.10.04_20230328_R640,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,XNF-8010RV,2.10.04_20230328_R640,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,XNO-6080R,2.10.05_20230516_R685,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,XNO-6083R,2.22.04,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,XNO-6120R,2.10.02_20220117_R551,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,XNO-6123R,2.22.04,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,XNO-8020R,2.10.02_20220401_R586,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,XNO-8083R,2.22.04,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,XNO-9083R,2.11.02_20220705_R186,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,XNO-C8083R,2.23.02_20241011_R577,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,XNP-6320H,2.10.02_20220324_R614,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,XNP-6321H,2.10.02_20220324_R614,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,XNP-C9253R,2.22.03_20231031_R121,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,XNV-6011,2.10.02_20220117_R573,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,XNV-6011W,2.10.02_20220117_R573,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,XNV-6012,2.10.02_20220328_R591,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,XNV-6080R,2.22.01_20240108_R595,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,XNV-6081Z,2.10.02_20220329_R501,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,XNV-6083R,2.22.04,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,XNV-6083RZ,2.22.04,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,XNV-6083Z,2.22.04,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,XNV-6123R,2.22.04,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,XNV-8080R,2.10.02_20220401_R615,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,XNV-8081R,2.10.02_20220329_R469,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,XNV-8083R,2.22.04,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,XNV-8083RZ,2.22.04,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,XNV-8083Z,2.22.04,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,XNV-8093R,2.22.04,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,XNV-9082R,2.23.00_20240416_R579,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,XNV-9083R,2.22.03_20230711_R331,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,XNV-9083RZ,2.22.04,Streaming to multiple connectors simultaneously can cause all streams to stop.
+Hanwha Techwin,XNZ-6320A,2.11.01_20220719_R87,Streaming to multiple connectors simultaneously can cause all streams to stop.
 Hikvision,DS-2CD1143G0-I,V5.7.20,
 Hikvision,DS-2CD1143G2-LIU,V5.8.4,
 Hikvision,DS-2CD2023G0-I,V5.6.6 build 210625,
@@ -657,6 +667,7 @@ Hikvision,DS-2CD2143G0-I,V5.6.2 build 190701,
 Hikvision,DS-2CD2143G2-IU,V5.7.14,
 Hikvision,DS-2CD2145FWD-IS,V5.6.821,
 Hikvision,DS-2CD2147G2-SU,V5.5.154 build 201010,
+Hikvision,DS-2CD2155FWD-I,IPC_G1_EN_STD_5.6.3_190923,
 Hikvision,DS-2CD2163G0-I,V5.5.82 build 181211,
 Hikvision,DS-2CD2183G2-I,V5.7.18,
 Hikvision,DS-2CD2183G2-IS,V5.7.13,
@@ -706,6 +717,8 @@ Hikvision,DS-2TD2628-3/QA,V5.5.58 build 220727,
 Hikvision,DS_2CD2343G2_I,V5.7.18,
 Hikvision,ECI-B12F2,V5.7.1 build 220609,
 Hikvision,ECI-T24F2,V5.7.1 build 220609,
+Hikvision,ENC324G2-TD,V5.7.14 build 231228,V5.7.14 build 231228
+Hikvision,ENC324G2-XD,V5.7.13 build 230517,V5.7.13 build 230517
 Hikvision,HIKVISION DS-2CD2132F-I,V5.4.5 build 170123,
 Hikvision,HIKVISION DS-2CD2183G2-I,V5.7.18,
 Hikvision,HIKVISION DS-2CD2345FWD-I,V5.5.61 build 180718,
@@ -740,6 +753,7 @@ Hunt Electronics,HNC344-XDLU,V5.6.2 build 191111,
 Hunt Electronics,HNC6D24-IZS,V5.5.34 build 200409,
 Hunt Electronics,HNP312-IR/25X,V5.5.2 build 180816,
 IC Realtime,IPMX-D40F-IRB2,2.800.00KL007.0.R,
+IC Realtime,IPMXE40FIRW2,2.460.00KL500.16.R, Build Date 2018-06-04,
 IDIS,DC-D4216RX 2.8mm, v1.7.0,
 IDIS,DC-D4536HRX-A, v1.7.0,
 IDIS,DC-S4217DRX,1.4.0,
@@ -750,6 +764,8 @@ IDIS,NC-T4217WRX,1.4.0,
 IDIS,NC-Y6516WRX,2.1.0,
 IONODES,PERCEPT-BC100-EM,10.9.0.2,
 Illustra,IFS03-D21-AT03,Illustra.SS008.03.00.00.0301,
+Inaxsys Security Systems,INLGDO4IRWF(V2),DIPC-B1222.3.8.C01965.230324,
+Inaxsys Security Systems,INLGDO4KIRWF,IPC_G6107-B0001P89D1806C85,
 IndigoVision,BX-5MP-BO-S-IR,4.10.0.96(32478),
 Interlogix,TVB-5301,V3.0,
 Interlogix,TVB-5304,V3.0,
@@ -762,6 +778,7 @@ LTS,CMIP7362W-28M,V5.6.2 build 211202,
 LTS,CMIP7382NW-28M,V5.6.2 build 211202,
 LTS,CMIP7422N-28M,V5.4.0 build 170209,
 LTS,CMIP7442-M,V5.3.6 build 160607,
+LTS,CMIP8232,V5.1.2 build 140606,
 Lorex Technology Inc.,E841CD,2.800.00LR000.7.R,
 Lorex Technology Inc.,E841CD-E,3.000.00LR000.9.R,
 Lorex Technology Inc.,E842CAB,2.880.00LR000.2.R,
@@ -800,8 +817,11 @@ OpenEye,OE-C1012D2-1,IPC_G6107-B0002P86D1806C08NB,
 OpenEye,OE-C1012D2-S,IPC-B6202.5.37.C05546NB.220224,
 OpenEye,OE-C3012T4B-S,IPC-B6202.5.82.C055130.NB.230914,
 OpenEye,OE-C3012T8-S-1,IPC-B6203.3.82.C055130.NB.230914,
+OpenEye,OE-C6123,pc20160225NSQ,
+OpenEye,OE-C6413,pc20200513NSQ,
 OpenEye,OE-C7032-WR,IPC_G6103-B0013P10D1904C70,
 OpenEye,OE-C7044-WR,IPC_G6102-B5016P10D1705C29,
+OpenEye,OE-C7624,pc20200327RP,
 OpenEye,OE-C97512,IPC_Q1203-B0009P10D1904C69,
 Pelco,D6230,2.6.0.6.9340-A0.0,
 Pelco,D6230L,2.13.7.1.9340-A0.0,
@@ -839,22 +859,27 @@ Pelco,IMP121-1ES-T71300985,01.16.30-20170910,
 Pelco,IMP121-1ES-T71300986,01.16.30-20170910,
 Pelco,IMP121-1ES-T71300988,01.16.30-20170910,
 Pelco,IMP121-1ES-T71300989,01.16.30-20170910,
+Pelco,IMP219-1E,3.29.69,
 Pelco,IMP221-1ES,01.16.42-20180911,
 Pelco,IMP221-1ES-T82508910,01.16.42-20180911,
 Pelco,IMP221-1IS,01.16.30-20170911,
 Pelco,IMP221-1RS,01.16.29-20170621,
 Pelco,IMP221-1RS-T71308915,01.16.30-20170910,
+Pelco,IMP221A-1lS,1.16.57,
+Pelco,IMP319-1E,v3.29.69,
 Pelco,IMP831,2.13.2.4.9091-A0.0,
 Pelco,IMP831-1ERS-TSBJ21000586,2.13.2.4.9091-A0.0,
 Pelco,IMP831-1RS-TSBJ21000614,2.13.2.4.9091-A0.0,
 Pelco,IMP831-1RS-TSBJ21000688,2.13.2.4.9091-A0.0,
 Pelco,P2230L-ESR,05.30.1.10-20230308,
 Pelco,SRXE4-4V9-EMD-IR1,4.80.0.22(0c5a7909),
+Pelco,SRXP4-3V10-EMD-IR,4.80.0.22(0c5a7909),
 Provision ISR,DI-340IPSN-28-V2,,
 REVO,RUCB2810-1X,GIPC-B6202.8.5.C01408.NB.221111,
 REVO,RULCB28-3,DIPC-B1222.6.6.C01406.230921,
 ReoLink,RLC-520A,v3.1.0.801_22010701,
 Siqura,FD1004M1-EI,V1.0.0 build 170524,
+Sonitrol Security Solution,SN-4V28-OD-I,V5.4.1OP build 180629,
 Sony,SNC-CH110,1.88.00,
 Sony,SNC-CH160,1.88.00,
 Sony,SNC-DH120,1.88.00,
@@ -929,21 +954,25 @@ Tyco Security Products,Illustra Pro4 4MP Dome Out,Illustra.SS016.24.09.01.0004,
 Tyco Security Products,JF,Illustra.SS016.24.09.01.0004,
 USAVision,UA-R500F2,V102_2023_01_30,
 Ubiquity Unifi,G3 Bullet,4.30.0,RTSP support only
-Ubiquity Unifi,G3 Dome,4.51.4,
+Ubiquity Unifi,G3 Dome,4.51.4,RTSP support only
 Ubiquity Unifi,G3 Flex,4.73.71,RTSP support only
-Ubiquity Unifi,G3 Micro,4.23.8,
+Ubiquity Unifi,G3 Micro,4.23.8,RTSP support only
+Ubiquity Unifi,G4 Dome,4.75.69,RTSP support only
 Ubiquity Unifi,G5 Bullet,4.74.106,RTSP support only
 Ubiquity Unifi,G5 Turret Ultra,4.74.106,RTSP support only
 Uniview,IPC324SR3-DVPF28-F,IPC_G6107-B0001P91D1806,
+Uniview,IPC328LR3-DVSPF28-F,IPC_G6107-B0002P61D1806,
 Uniview,IPC3534SR3-ADZK-G,GIPC-B6202.5.16.210809,
 Uniview,IPC354SR3-ADNPF28-F,IPC_G6107-B0001P97D1806,
 Uniview,IPC3614SR3-ADF28KM-G,GIPC-B6202.9.5.221122,
 Uniview,IPC3615SR3-ADPF28-F,GIPC-B6202.9.5.221122,
+Uniview,IPC3618SB-ADF28KM-I0,GIPC-B6203.13.7.240429,
 Uniview,IPC672LR-AX4DUPKC,GIPC-B6203.11.5.LJ01.230830,
 Uniview,IPC815SB-ADF14K-I0,GIPC-B6203.11.5.LJ01.230830,
 Uniview,IPFE5360X,IPC_G6107-B0001P97D1806,
 Uniview,IPT528AIX,IPC_G6107-B0001P97D1806,
 Uniview,IPV4212M,IPC_Q1201-B5021P20D1708,
+Uniview,SC-3183-IS-F28M,GIPC-B6203.7.5.NB.221020,
 VITEK,VTD-TND3RFE-2,4.1,
 Vicon Industries Inc.,V2002D-PTZ,01.02.1.13.4709,
 Vicon Industries Inc.,V2002D-PTZ-S22500138,01.02.1.13.6387,
@@ -1004,18 +1033,18 @@ i-PRO/Panasonic,WV-NW502S,2.44,
 i-PRO/Panasonic,WV-S1531LT,4.7,
 i-PRO/Panasonic,WV-S1536LT,2,
 i-PRO/Panasonic,WV-S1570L,1,
-i-PRO/Panasonic,WV-S2111L,4.8,
+i-PRO/Panasonic,WV-S2111L,V5.08,
 i-PRO/Panasonic,WV-S2131L,4.8,
 i-PRO/Panasonic,WV-S2135,2.6,
 i-PRO/Panasonic,WV-S2136L,2,
-i-PRO/Panasonic,WV-S2231L,4.8,
+i-PRO/Panasonic,WV-S2231L,V5.08,
 i-PRO/Panasonic,WV-S22500-F3L,2.6,
 i-PRO/Panasonic,WV-S2270L,4.8,
 i-PRO/Panasonic,WV-S2272L,1.6,
 i-PRO/Panasonic,WV-S2531L,5,
 i-PRO/Panasonic,WV-S2531LT,4.31,
 i-PRO/Panasonic,WV-S2536L,2.3,
-i-PRO/Panasonic,WV-S2536LA,4.8,
+i-PRO/Panasonic,WV-S2536LA,V5.08,
 i-PRO/Panasonic,WV-S2536LT,2.3,
 i-PRO/Panasonic,WV-S25700-V2L,2.33,
 i-PRO/Panasonic,WV-S3131L,4.11,
@@ -1030,9 +1059,9 @@ i-PRO/Panasonic,WV-S8544L,2.33,
 i-PRO/Panasonic,WV-SF138,2.43,
 i-PRO/Panasonic,WV-SF336,2,
 i-PRO/Panasonic,WV-SF438,2.43,
-i-PRO/Panasonic,WV-SW155,4.8,
+i-PRO/Panasonic,WV-SW155,V2.50,
 i-PRO/Panasonic,WV-SW158,2.48,
-i-PRO/Panasonic,WV-SW355,4.8,
+i-PRO/Panasonic,WV-SW355,V2.44,
 i-PRO/Panasonic,WV-U1532LA,2.5,
 i-PRO/Panasonic,WV-U2140LA,2.5,
 i-PRO/Panasonic,WV-U2142LA,2.4,

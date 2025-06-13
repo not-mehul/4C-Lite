@@ -162,9 +162,9 @@ export const DataPreviewSelect: React.FC<DataPreviewSelectProps> = ({ data, onNe
             <h3 className="text-lg font-semibold text-green-900 dark:text-green-100">Model Column</h3>
             <span className="text-red-500 dark:text-red-400 text-sm font-medium">Required</span>
           </div>
-          <p className="text-sm text-green-700 dark:text-green-300 mb-3">
-            Click on any column to select it as the Model column.
-          </p>
+          {/*<p className="text-sm text-green-700 dark:text-green-300 mb-3">*/}
+          {/*  Click on any column to select it as the Model column.*/}
+          {/*</p>*/}
           {modelColumn && (
             <div className="flex items-center space-x-2 bg-green-100 dark:bg-green-900/40 rounded-md p-2">
               <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400" />
@@ -181,9 +181,9 @@ export const DataPreviewSelect: React.FC<DataPreviewSelectProps> = ({ data, onNe
             <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-100">Count Column</h3>
             <span className="text-gray-400 dark:text-gray-500 text-sm">Optional</span>
           </div>
-          <p className="text-sm text-blue-700 dark:text-blue-300 mb-3">
-            Click on a column header while holding <kbd className="px-1 py-0.5 bg-blue-200 dark:bg-blue-800 rounded text-xs">Cmd</kbd> to select it as the Count column.
-          </p>
+          {/*<p className="text-sm text-blue-700 dark:text-blue-300 mb-3">*/}
+          {/*  Click on a column while holding <kbd className="px-1 py-0.5 bg-blue-200 dark:bg-blue-800 rounded text-xs">Cmd</kbd> to select it as the Count column.*/}
+          {/*</p>*/}
           {countColumn && (
             <div className="flex items-center space-x-2 bg-blue-100 dark:bg-blue-900/40 rounded-md p-2">
               <CheckCircle className="w-4 h-4 text-blue-600 dark:text-blue-400" />
@@ -314,7 +314,9 @@ export const DataPreviewSelect: React.FC<DataPreviewSelectProps> = ({ data, onNe
             <p className="text-blue-800 dark:text-blue-200 font-semibold mb-2">Usage:</p>
             <div className="grid md:grid-cols-2 gap-2 text-blue-700 dark:text-blue-300">
               <div>• <strong>Click</strong> column headers to select as Model column</div>
-              <div>• <strong>Cmd+Click</strong> column headers to select as Count column</div>
+              <div>• <strong><kbd className="px-1 py-0.5 bg-blue-200 dark:bg-blue-800 rounded text-xs">Cmd</kbd>+Click</strong> column
+                headers to select as Count column
+              </div>
               <div>• <strong>Double-click</strong> column headers to sort data</div>
               <div>• <strong>With Count</strong>: Groups by Model and sums Count values</div>
               <div>• <strong>Without Count</strong>: Counts unique Model occurrences</div>
