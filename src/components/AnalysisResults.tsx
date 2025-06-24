@@ -316,17 +316,17 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
   const getMatchTypeLabel = (matchType: string) => {
     switch (matchType) {
       case 'exact':
-        return 'Exact Match';
+        return 'Exact';
       case 'potential':
-        return 'Potential Match';
+        return 'Potential';
       case 'identified':
-        return 'Identified Match';
+        return 'Identified';
       case 'declined':
-        return 'Declined Match';
+        return 'Declined';
       case 'modified':
-        return 'Modified Match';
+        return 'Modified';
       case 'none':
-        return 'No Match';
+        return 'None';
       default:
         return matchType;
     }
