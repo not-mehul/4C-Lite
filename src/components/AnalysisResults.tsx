@@ -517,7 +517,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
             {thirdPartyCameras.length > 0 && (
               <li>- This data has also been checked against observed third-party camera database containing {thirdPartyCameras.length} models.</li>
             )}
-            <li>For More information visit: https://paradoxicalbit.com</li>
+            <li>For Usage Instructions visit: https://paradoxicalbit.com</li>
           </ul>          
         </div>
       </div>
