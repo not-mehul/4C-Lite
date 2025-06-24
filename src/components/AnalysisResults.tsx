@@ -511,7 +511,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
           </div>
         )}
 
-        <div className="flex items-center justify-left space-x-2 text-sm text-blue-600 dark:text-blue-400">
+        <div className="flex items-center justify-left text-sm text-blue-600 dark:text-blue-400">
           <ul>
             <li><Filter className="w-4 h-4" /> Camera Data has been cleaned to remove IP addresses, MAC addresses, dates, and common words.</li>
             {thirdPartyCameras.length > 0 && (
