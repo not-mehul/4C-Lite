@@ -3,7 +3,6 @@ import {
   BarChart,
   Download,
   RotateCcw,
-  TrendingUp,
   Search,
   CheckCircle,
   AlertTriangle,
@@ -15,36 +14,15 @@ import {
   Calendar,
   Database,
 } from 'lucide-react';
-import { CSVData, ColumnSelection, AnalysisResult } from '../types';
-import { VerkadaModel } from '../utils/verkadaLoader';
-import {
-  preprocessModelForMatching,
-  extractManufacturerNames,
-  cleanModelData,
-} from '../utils/dataCleaningUtils';
+import { CSVData, ColumnSelection, VerkadaModel, ModelMatch, VerkadaFileInfo, CompatibilityType } from '../types';
+import { extractManufacturerNames } from '../utils/dataCleaningUtils';
+import { processModelMatches } from '../utils/matchingUtils';
 
 interface AnalysisResultsProps {
   data: CSVData;
   selection: ColumnSelection;
   verkadaModels: VerkadaModel[];
   onStartOver: () => void;
-}
-
-interface ModelMatch {
-  model: string;
-  cleanedModel: string;
-  count: number;
-  matchType: 'exact' | 'potential' | 'none';
-  matchedWith?: string;
-  similarity?: number;
-  removedElements?: string[];
-  verkadaDetails?: VerkadaModel;
-  compatibilityType?: 'RTSP' | 'ONVIF-S';
-}
-
-interface VerkadaFileInfo {
-  totalModels: number;
-  lastModified: string;
 }
 
 export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
@@ -54,8 +32,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
   onStartOver,
 }) => {
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
-  const [verkadaFileInfo, setVerkadaFileInfo] =
-    useState<VerkadaFileInfo | null>(null);
+  const [verkadaFileInfo, setVerkadaFileInfo] = useState<VerkadaFileInfo | null>(null);
 
   // Load Verkada file information
   useEffect(() => {
@@ -96,6 +73,9 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
     }
   }, [verkadaModels]);
 
+  /**
+   * Toggles the expansion state of a table row
+   */
   const toggleRowExpansion = (modelKey: string) => {
     const newExpanded = new Set(expandedRows);
     if (newExpanded.has(modelKey)) {
@@ -106,142 +86,16 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
     setExpandedRows(newExpanded);
   };
 
-  // Function to determine compatibility type based on notes
-  const getCompatibilityType = (verkadaModel?: VerkadaModel): 'RTSP' | 'ONVIF-S' => {
-    if (!verkadaModel || !verkadaModel.notes) {
-      return 'ONVIF-S';
-    }
-    
-    const notes = verkadaModel.notes.toLowerCase();
-    return notes.includes('rtsp support only') ? 'RTSP' : 'ONVIF-S';
-  };
-
-  // Function to calculate string similarity
-  const calculateSimilarity = (str1: string, str2: string): number => {
-    const longer = str1.length > str2.length ? str1 : str2;
-    const shorter = str1.length > str2.length ? str2 : str1;
-
-    if (longer.length === 0) return 1.0;
-
-    const editDistance = levenshteinDistance(
-      longer.toLowerCase(),
-      shorter.toLowerCase()
-    );
-    return (longer.length - editDistance) / longer.length;
-  };
-
-  // Levenshtein distance calculation
-  const levenshteinDistance = (str1: string, str2: string): number => {
-    const matrix = [];
-
-    for (let i = 0; i <= str2.length; i++) {
-      matrix[i] = [i];
-    }
-
-    for (let j = 0; j <= str1.length; j++) {
-      matrix[0][j] = j;
-    }
-
-    for (let i = 1; i <= str2.length; i++) {
-      for (let j = 1; j <= str1.length; j++) {
-        if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
-          matrix[i][j] = matrix[i - 1][j - 1];
-        } else {
-          matrix[i][j] = Math.min(
-            matrix[i - 1][j - 1] + 1,
-            matrix[i][j - 1] + 1,
-            matrix[i - 1][j] + 1
-          );
-        }
-      }
-    }
-
-    return matrix[str2.length][str1.length];
-  };
-
-  // Function to find best match for a model
-  const findBestMatch = (
-    cleanedModel: string,
-    manufacturerNames: string[]
-  ): {
-    matchType: 'exact' | 'potential' | 'none';
-    matchedWith?: string;
-    similarity?: number;
-    verkadaDetails?: VerkadaModel;
-    compatibilityType?: 'RTSP' | 'ONVIF-S';
-  } => {
-    if (!cleanedModel || cleanedModel.trim() === '') {
-      return { matchType: 'none' };
-    }
-
-    const modelLower = cleanedModel.toLowerCase().trim();
-
-    // Check for exact match with cleaned Verkada models
-    for (const verkadaModel of verkadaModels) {
-      const cleanedVerkadaModel = preprocessModelForMatching(
-        verkadaModel.modelName,
-        manufacturerNames
-      );
-      if (cleanedVerkadaModel.toLowerCase() === modelLower) {
-        return {
-          matchType: 'exact',
-          matchedWith: verkadaModel.modelName,
-          similarity: 1.0,
-          verkadaDetails: verkadaModel,
-          compatibilityType: getCompatibilityType(verkadaModel),
-        };
-      }
-    }
-
-    // Check for potential matches
-    let bestMatch = '';
-    let bestSimilarity = 0;
-    let bestOriginalModel = '';
-    let bestVerkadaModel: VerkadaModel | undefined;
-
-    for (const verkadaModel of verkadaModels) {
-      const cleanedVerkadaModel = preprocessModelForMatching(
-        verkadaModel.modelName,
-        manufacturerNames
-      );
-      const similarity = calculateSimilarity(
-        modelLower,
-        cleanedVerkadaModel.toLowerCase()
-      );
-
-      // Check if one is a subset of the other
-      const isSubset =
-        modelLower.includes(cleanedVerkadaModel.toLowerCase()) ||
-        cleanedVerkadaModel.toLowerCase().includes(modelLower);
-
-      if (similarity > bestSimilarity || (isSubset && similarity > 0.5)) {
-        bestSimilarity = similarity;
-        bestMatch = cleanedVerkadaModel;
-        bestOriginalModel = verkadaModel.modelName;
-        bestVerkadaModel = verkadaModel;
-      }
-    }
-
-    // Consider it a potential match if similarity > 0.6 or if there's a significant substring match
-    if (bestSimilarity > 0.6) {
-      return {
-        matchType: 'potential',
-        matchedWith: bestOriginalModel,
-        similarity: bestSimilarity,
-        verkadaDetails: bestVerkadaModel,
-        compatibilityType: getCompatibilityType(bestVerkadaModel),
-      };
-    }
-
-    return { matchType: 'none' };
-  };
-
+  /**
+   * Processes the uploaded data and performs compatibility analysis
+   */
   const results = useMemo(() => {
     const modelColumnIndex = data.headers.indexOf(selection.modelColumn!);
     const countColumnIndex = selection.countColumn
       ? data.headers.indexOf(selection.countColumn)
       : -1;
 
+    // Aggregate data by model
     const aggregatedData = new Map<string, number>();
 
     data.rows.forEach((row) => {
@@ -262,40 +116,23 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
     // Extract manufacturer names for cleaning
     const manufacturerNames = extractManufacturerNames(verkadaModels);
 
-    return Array.from(aggregatedData.entries())
-      .map(([model, count]) => {
-        const cleaningResult = cleanModelData(model, manufacturerNames);
-        const cleanedModel = cleaningResult.cleaned;
-        const matchInfo = findBestMatch(cleanedModel, manufacturerNames);
-
-        return {
-          model,
-          cleanedModel,
-          count,
-          matchType: matchInfo.matchType,
-          matchedWith: matchInfo.matchedWith,
-          similarity: matchInfo.similarity,
-          removedElements: cleaningResult.removedElements,
-          verkadaDetails: matchInfo.verkadaDetails,
-          compatibilityType: matchInfo.compatibilityType,
-        } as ModelMatch;
-      })
-      .sort((a, b) => b.count - a.count);
+    // Process matches using utility function
+    return processModelMatches(aggregatedData, manufacturerNames, verkadaModels);
   }, [data, selection, verkadaModels]);
 
+  // Calculate statistics
   const totalCount = results.reduce((sum, result) => sum + result.count, 0);
-  const maxCount = Math.max(...results.map((r) => r.count));
-
-  // Statistics for match types
   const exactMatches = results.filter((r) => r.matchType === 'exact');
   const potentialMatches = results.filter((r) => r.matchType === 'potential');
   const noMatches = results.filter((r) => r.matchType === 'none');
 
-  // Calculate device counts for each match type
   const exactMatchDeviceCount = exactMatches.reduce((sum, match) => sum + match.count, 0);
   const potentialMatchDeviceCount = potentialMatches.reduce((sum, match) => sum + match.count, 0);
   const noMatchDeviceCount = noMatches.reduce((sum, match) => sum + match.count, 0);
 
+  /**
+   * Downloads the analysis results as a CSV file
+   */
   const downloadResults = () => {
     const csvContent = [
       [
@@ -331,7 +168,10 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
     URL.revokeObjectURL(url);
   };
 
-  const getMatchIcon = (matchType: 'exact' | 'potential' | 'none') => {
+  /**
+   * Returns appropriate icon for match type
+   */
+  const getMatchIcon = (matchType: string) => {
     switch (matchType) {
       case 'exact':
         return <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400" />;
@@ -339,10 +179,15 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
         return <AlertTriangle className="w-4 h-4 text-yellow-600 dark:text-yellow-400" />;
       case 'none':
         return <X className="w-4 h-4 text-red-600 dark:text-red-400" />;
+      default:
+        return null;
     }
   };
 
-  const getMatchColor = (matchType: 'exact' | 'potential' | 'none') => {
+  /**
+   * Returns CSS classes for match type styling
+   */
+  const getMatchColor = (matchType: string) => {
     switch (matchType) {
       case 'exact':
         return 'text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20';
@@ -350,10 +195,15 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
         return 'text-yellow-600 dark:text-yellow-400 bg-yellow-50 dark:bg-yellow-900/20';
       case 'none':
         return 'text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20';
+      default:
+        return '';
     }
   };
 
-  const getCompatibilityTypeColor = (compatibilityType: 'RTSP' | 'ONVIF-S') => {
+  /**
+   * Returns CSS classes for compatibility type styling
+   */
+  const getCompatibilityTypeColor = (compatibilityType: CompatibilityType) => {
     switch (compatibilityType) {
       case 'RTSP':
         return 'text-orange-700 dark:text-orange-300 bg-orange-100 dark:bg-orange-900/30 border-orange-200 dark:border-orange-800';
@@ -572,15 +422,12 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
             </thead>
             <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
               {results.map((result, index) => {
-                const percentage = ((result.count / totalCount) * 100).toFixed(
-                  1
-                );
+                const percentage = ((result.count / totalCount) * 100).toFixed(1);
                 const modelKey = `${result.model}-${index}`;
                 const isExpanded = expandedRows.has(modelKey);
                 const hasDetails =
                   result.verkadaDetails &&
-                  (result.matchType === 'exact' ||
-                    result.matchType === 'potential');
+                  (result.matchType === 'exact' || result.matchType === 'potential');
 
                 return (
                   <React.Fragment key={modelKey}>

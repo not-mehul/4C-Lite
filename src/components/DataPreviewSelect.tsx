@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
-import { ChevronUp, ChevronDown, Eye, ArrowRight, CheckCircle, AlertCircle, Info, X, Keyboard } from 'lucide-react';
+import { ChevronUp, ChevronDown, Eye, ArrowRight, CheckCircle, AlertCircle, X, Keyboard } from 'lucide-react';
 import { CSVData, ColumnSelection } from '../types';
+import { DEFAULT_PREVIEW_ROWS } from '../utils/constants';
 
 interface DataPreviewSelectProps {
   data: CSVData;
@@ -16,6 +17,9 @@ export const DataPreviewSelect: React.FC<DataPreviewSelectProps> = ({ data, onNe
   const [error, setError] = useState<string | null>(null);
   const [focusedColumn, setFocusedColumn] = useState<number>(-1);
 
+  /**
+   * Sorts data based on selected column and direction
+   */
   const sortedData = useMemo(() => {
     if (!sortColumn) return data.rows;
 
@@ -31,8 +35,11 @@ export const DataPreviewSelect: React.FC<DataPreviewSelectProps> = ({ data, onNe
     });
   }, [data.rows, data.headers, sortColumn, sortDirection]);
 
-  const displayedRows = showAll ? sortedData : sortedData.slice(0, 10);
+  const displayedRows = showAll ? sortedData : sortedData.slice(0, DEFAULT_PREVIEW_ROWS);
 
+  /**
+   * Handles column sorting when header is clicked
+   */
   const handleSort = (header: string) => {
     if (sortColumn === header) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
@@ -42,6 +49,9 @@ export const DataPreviewSelect: React.FC<DataPreviewSelectProps> = ({ data, onNe
     }
   };
 
+  /**
+   * Handles column selection for model or count columns
+   */
   const handleColumnSelect = (header: string, type: 'model' | 'count') => {
     if (type === 'model') {
       setModelColumn(header === modelColumn ? null : header);
@@ -59,6 +69,9 @@ export const DataPreviewSelect: React.FC<DataPreviewSelectProps> = ({ data, onNe
     setError(null);
   };
 
+  /**
+   * Handles keyboard navigation and selection
+   */
   const handleKeyDown = (e: React.KeyboardEvent, columnIndex: number) => {
     switch (e.key) {
       case 'ArrowLeft':
@@ -85,12 +98,18 @@ export const DataPreviewSelect: React.FC<DataPreviewSelectProps> = ({ data, onNe
     }
   };
 
+  /**
+   * Clears all column selections
+   */
   const clearSelections = () => {
     setModelColumn(null);
     setCountColumn(null);
     setError(null);
   };
 
+  /**
+   * Validates selections and proceeds to analysis
+   */
   const handleNext = () => {
     if (!modelColumn) {
       setError('Please select a Model column to continue.');
@@ -103,6 +122,9 @@ export const DataPreviewSelect: React.FC<DataPreviewSelectProps> = ({ data, onNe
     });
   };
 
+  /**
+   * Returns sort icon for column header
+   */
   const getSortIcon = (header: string) => {
     if (sortColumn !== header) return null;
     return sortDirection === 'asc' ? 
@@ -110,6 +132,9 @@ export const DataPreviewSelect: React.FC<DataPreviewSelectProps> = ({ data, onNe
       <ChevronDown className="w-4 h-4" />;
   };
 
+  /**
+   * Returns CSS classes for column headers based on selection state
+   */
   const getColumnHeaderClass = (header: string, index: number) => {
     const isModelColumn = header === modelColumn;
     const isCountColumn = header === countColumn;
@@ -128,7 +153,10 @@ export const DataPreviewSelect: React.FC<DataPreviewSelectProps> = ({ data, onNe
     }
   };
 
-  const getCellClass = (header: string, rowIndex: number) => {
+  /**
+   * Returns CSS classes for table cells based on column selection
+   */
+  const getCellClass = (header: string) => {
     const isModelColumn = header === modelColumn;
     const isCountColumn = header === countColumn;
     
@@ -162,9 +190,6 @@ export const DataPreviewSelect: React.FC<DataPreviewSelectProps> = ({ data, onNe
             <h3 className="text-lg font-semibold text-green-900 dark:text-green-100">Model Column</h3>
             <span className="text-red-500 dark:text-red-400 text-sm font-medium">Required</span>
           </div>
-          {/*<p className="text-sm text-green-700 dark:text-green-300 mb-3">*/}
-          {/*  Click on any column to select it as the Model column.*/}
-          {/*</p>*/}
           {modelColumn && (
             <div className="flex items-center space-x-2 bg-green-100 dark:bg-green-900/40 rounded-md p-2">
               <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400" />
@@ -181,9 +206,6 @@ export const DataPreviewSelect: React.FC<DataPreviewSelectProps> = ({ data, onNe
             <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-100">Count Column</h3>
             <span className="text-gray-400 dark:text-gray-500 text-sm">Optional</span>
           </div>
-          {/*<p className="text-sm text-blue-700 dark:text-blue-300 mb-3">*/}
-          {/*  Click on a column while holding <kbd className="px-1 py-0.5 bg-blue-200 dark:bg-blue-800 rounded text-xs">Cmd</kbd> to select it as the Count column.*/}
-          {/*</p>*/}
           {countColumn && (
             <div className="flex items-center space-x-2 bg-blue-100 dark:bg-blue-900/40 rounded-md p-2">
               <CheckCircle className="w-4 h-4 text-blue-600 dark:text-blue-400" />
@@ -272,7 +294,7 @@ export const DataPreviewSelect: React.FC<DataPreviewSelectProps> = ({ data, onNe
                     {row.map((cell, cellIndex) => (
                       <td 
                         key={cellIndex} 
-                        className={getCellClass(data.headers[cellIndex], rowIndex)}
+                        className={getCellClass(data.headers[cellIndex])}
                         onClick={(e) => {
                           if (e.ctrlKey || e.metaKey) {
                             handleColumnSelect(data.headers[cellIndex], 'count');
@@ -293,7 +315,7 @@ export const DataPreviewSelect: React.FC<DataPreviewSelectProps> = ({ data, onNe
           </table>
         </div>
 
-        {data.rows.length > 10 && (
+        {data.rows.length > DEFAULT_PREVIEW_ROWS && (
           <div className="px-6 py-4 bg-gray-50 dark:bg-gray-900/50 border-t border-gray-200 dark:border-gray-700">
             <button
               onClick={() => setShowAll(!showAll)}

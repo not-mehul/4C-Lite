@@ -5,18 +5,23 @@ import { AnalysisResults } from './components/AnalysisResults';
 import { ErrorMessage } from './components/ErrorMessage';
 import { Navigation } from './components/Navigation';
 import { ThemeProvider } from './contexts/ThemeContext';
-import { CSVData, ColumnSelection as ColumnSelectionType, UploadStep } from './types';
-import { loadVerkadaModels, VerkadaModel } from './utils/verkadaLoader';
+import { CSVData, ColumnSelection, UploadStep, VerkadaModel } from './types';
+import { loadVerkadaModels } from './utils/verkadaLoader';
 
+/**
+ * Main application content component
+ */
 function AppContent() {
   const [currentStep, setCurrentStep] = useState<UploadStep>('upload');
   const [csvData, setCsvData] = useState<CSVData | null>(null);
-  const [columnSelection, setColumnSelection] = useState<ColumnSelectionType | null>(null);
+  const [columnSelection, setColumnSelection] = useState<ColumnSelection | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [verkadaModels, setVerkadaModels] = useState<VerkadaModel[]>([]);
   const [isLoadingVerkada, setIsLoadingVerkada] = useState(true);
 
-  // Load Verkada models on app initialization
+  /**
+   * Load Verkada models on app initialization
+   */
   useEffect(() => {
     const initializeVerkadaModels = async () => {
       try {
@@ -40,20 +45,32 @@ function AppContent() {
     initializeVerkadaModels();
   }, []);
 
+  /**
+   * Handles successful file upload
+   */
   const handleFileUpload = (data: CSVData) => {
     setCsvData(data);
     setCurrentStep('preview');
   };
 
+  /**
+   * Handles error messages
+   */
   const handleError = (errorMessage: string) => {
     setError(errorMessage);
   };
 
-  const handleSelectionNext = (selection: ColumnSelectionType) => {
+  /**
+   * Handles column selection and proceeds to analysis
+   */
+  const handleSelectionNext = (selection: ColumnSelection) => {
     setColumnSelection(selection);
     setCurrentStep('analysis');
   };
 
+  /**
+   * Resets application state to start over
+   */
   const handleStartOver = () => {
     setCsvData(null);
     setColumnSelection(null);
@@ -61,8 +78,59 @@ function AppContent() {
     setError(null);
   };
 
+  /**
+   * Closes error message
+   */
   const closeError = () => {
     setError(null);
+  };
+
+  /**
+   * Renders progress indicator steps
+   */
+  const renderProgressIndicator = () => {
+    const steps = [
+      { key: 'upload', label: 'Upload', step: 1 },
+      { key: 'preview', label: 'Preview & Select', step: 2 },
+      { key: 'analysis', label: 'Analysis', step: 3 }
+    ];
+
+    return (
+      <div className="max-w-2xl mx-auto mb-8">
+        <div className="flex items-center justify-between">
+          {steps.map(({ key, label, step }) => {
+            const isActive = currentStep === key;
+            const isCompleted = steps.findIndex(s => s.key === currentStep) > 
+              steps.findIndex(s => s.key === key);
+            
+            return (
+              <div key={key} className="flex items-center">
+                <div className={`
+                  flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium transition-all duration-300 shadow-sm
+                  ${isActive ? 'bg-blue-600 dark:bg-blue-500 text-white shadow-blue-200 dark:shadow-blue-800' : 
+                    isCompleted ? 'bg-green-600 dark:bg-green-500 text-white shadow-green-200 dark:shadow-green-800' : 
+                    'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400'}
+                `}>
+                  {step}
+                </div>
+                <span className={`ml-2 text-sm font-medium transition-colors duration-300 ${
+                  isActive ? 'text-blue-600 dark:text-blue-400' : 
+                  isCompleted ? 'text-green-600 dark:text-green-400' : 
+                  'text-gray-500 dark:text-gray-400'
+                }`}>
+                  {label}
+                </span>
+                {step < 3 && (
+                  <div className={`ml-4 w-8 h-0.5 transition-all duration-300 ${
+                    isCompleted ? 'bg-green-600 dark:bg-green-500' : 'bg-gray-200 dark:bg-gray-700'
+                  }`} />
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
   };
 
   // Show loading state while Verkada models are being loaded
@@ -89,44 +157,7 @@ function AppContent() {
       <div className="py-8 px-4">
         <div className="container mx-auto max-w-8xl">
           {/* Progress Indicator */}
-          <div className="max-w-2xl mx-auto mb-8">
-            <div className="flex items-center justify-between">
-              {[
-                { key: 'upload', label: 'Upload', step: 1 },
-                { key: 'preview', label: 'Preview & Select', step: 2 },
-                { key: 'analysis', label: 'Analysis', step: 3 }
-              ].map(({ key, label, step }) => {
-                const isActive = currentStep === key;
-                const isCompleted = ['upload', 'preview', 'analysis'].indexOf(currentStep) > 
-                  ['upload', 'preview', 'analysis'].indexOf(key);
-                
-                return (
-                  <div key={key} className="flex items-center">
-                    <div className={`
-                      flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium transition-all duration-300 shadow-sm
-                      ${isActive ? 'bg-blue-600 dark:bg-blue-500 text-white shadow-blue-200 dark:shadow-blue-800' : 
-                        isCompleted ? 'bg-green-600 dark:bg-green-500 text-white shadow-green-200 dark:shadow-green-800' : 
-                        'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400'}
-                    `}>
-                      {step}
-                    </div>
-                    <span className={`ml-2 text-sm font-medium transition-colors duration-300 ${
-                      isActive ? 'text-blue-600 dark:text-blue-400' : 
-                      isCompleted ? 'text-green-600 dark:text-green-400' : 
-                      'text-gray-500 dark:text-gray-400'
-                    }`}>
-                      {label}
-                    </span>
-                    {step < 3 && (
-                      <div className={`ml-4 w-8 h-0.5 transition-all duration-300 ${
-                        isCompleted ? 'bg-green-600 dark:bg-green-500' : 'bg-gray-200 dark:bg-gray-700'
-                      }`} />
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
+          {renderProgressIndicator()}
 
           {/* Main Content */}
           <div className="transition-all duration-300 animate-scale-in">
@@ -161,6 +192,9 @@ function AppContent() {
   );
 }
 
+/**
+ * Root App component with theme provider
+ */
 function App() {
   return (
     <ThemeProvider>
