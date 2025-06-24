@@ -2,9 +2,10 @@
  * Model matching utilities for compatibility analysis
  */
 
-import { VerkadaModel, MatchType, CompatibilityType, ModelMatch, CameraDetails } from '../types';
+import { VerkadaModel, MatchType, CompatibilityType, ModelMatch, CameraDetails, ThirdPartyCamera } from '../types';
 import { calculateSimilarity, isSubsetMatch } from './stringUtils';
 import { preprocessModelForMatching } from './dataCleaningUtils';
+import { findThirdPartyMatch, getPreferredIntegrationType } from './thirdPartyLoader';
 import { MIN_SIMILARITY_THRESHOLD } from './constants';
 
 /**
@@ -122,16 +123,59 @@ const findPotentialMatch = (
 };
 
 /**
+ * Enhances camera details with third-party database information
+ * @param match Model match to enhance
+ * @param thirdPartyCameras Array of third-party cameras
+ * @returns Enhanced model match with third-party data
+ */
+export const enhanceWithThirdPartyData = (
+  match: ModelMatch,
+  thirdPartyCameras: ThirdPartyCamera[]
+): ModelMatch => {
+  // Skip potential matches - they need user action first
+  if (match.matchType === 'potential') {
+    return match;
+  }
+
+  // Try to find third-party match using the original model name
+  const thirdPartyMatch = findThirdPartyMatch(match.model, thirdPartyCameras);
+  
+  if (!thirdPartyMatch) {
+    return match;
+  }
+
+  // Create or update camera details with third-party data
+  const enhancedDetails: CameraDetails = {
+    modelName: match.editedDetails?.modelName || match.matchedWith || match.model,
+    manufacturer: thirdPartyMatch.manufacturer,
+    minimumFirmware: match.editedDetails?.minimumFirmware || match.verkadaDetails?.minimumFirmware || '',
+    notes: match.editedDetails?.notes || match.verkadaDetails?.notes || '',
+    resolutionMp: thirdPartyMatch.resolution_mp,
+    channelCount: thirdPartyMatch.channel_count,
+    integrationType: getPreferredIntegrationType(thirdPartyMatch.protocols),
+  };
+
+  return {
+    ...match,
+    editedDetails: enhancedDetails,
+    compatibilityType: enhancedDetails.integrationType,
+    thirdPartyEnhanced: true,
+  };
+};
+
+/**
  * Processes analysis results to create model matches with compatibility info
  * @param aggregatedData Map of model names to counts
  * @param manufacturerNames Array of manufacturer names
  * @param verkadaModels Array of Verkada models
+ * @param thirdPartyCameras Array of third-party cameras for enhancement
  * @returns Array of processed model matches
  */
 export const processModelMatches = (
   aggregatedData: Map<string, number>,
   manufacturerNames: string[],
-  verkadaModels: VerkadaModel[]
+  verkadaModels: VerkadaModel[],
+  thirdPartyCameras: ThirdPartyCamera[] = []
 ): ModelMatch[] => {
   return Array.from(aggregatedData.entries())
     .map(([model, count], index) => {
@@ -139,7 +183,7 @@ export const processModelMatches = (
       const cleanedModel = cleaningResult.cleaned;
       const matchInfo = findBestMatch(cleanedModel, manufacturerNames, verkadaModels);
 
-      return {
+      let baseMatch: ModelMatch = {
         id: `model-${index}-${Date.now()}`, // Unique identifier
         model,
         cleanedModel,
@@ -151,7 +195,15 @@ export const processModelMatches = (
         verkadaDetails: matchInfo.verkadaDetails,
         compatibilityType: matchInfo.compatibilityType,
         isEditing: false,
-      } as ModelMatch;
+        thirdPartyEnhanced: false,
+      };
+
+      // Enhance with third-party data if available
+      if (thirdPartyCameras.length > 0) {
+        baseMatch = enhanceWithThirdPartyData(baseMatch, thirdPartyCameras);
+      }
+
+      return baseMatch;
     })
     .sort((a, b) => b.count - a.count);
 };

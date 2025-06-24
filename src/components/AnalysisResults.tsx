@@ -15,10 +15,12 @@ import {
   Database,
   Edit,
   Save,
+  Eye,
 } from 'lucide-react';
-import { CSVData, ColumnSelection, VerkadaModel, ModelMatch, VerkadaFileInfo, CompatibilityType, CameraDetails, MatchType } from '../types';
+import { CSVData, ColumnSelection, VerkadaModel, ModelMatch, VerkadaFileInfo, CompatibilityType, CameraDetails, MatchType, ThirdPartyCamera } from '../types';
 import { extractManufacturerNames } from '../utils/dataCleaningUtils';
-import { processModelMatches, createDefaultCameraDetails } from '../utils/matchingUtils';
+import { processModelMatches, createDefaultCameraDetails, enhanceWithThirdPartyData } from '../utils/matchingUtils';
+import { loadThirdPartyCameras } from '../utils/thirdPartyLoader';
 import { CameraEditForm } from './CameraEditForm';
 import { MatchActionButtons } from './MatchActionButtons';
 
@@ -38,6 +40,31 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   const [verkadaFileInfo, setVerkadaFileInfo] = useState<VerkadaFileInfo | null>(null);
   const [modelMatches, setModelMatches] = useState<ModelMatch[]>([]);
+  const [thirdPartyCameras, setThirdPartyCameras] = useState<ThirdPartyCamera[]>([]);
+  const [isLoadingThirdParty, setIsLoadingThirdParty] = useState(true);
+
+  // Load third-party camera database
+  useEffect(() => {
+    const loadThirdPartyData = async () => {
+      try {
+        setIsLoadingThirdParty(true);
+        const cameras = await loadThirdPartyCameras();
+        setThirdPartyCameras(cameras);
+        
+        if (cameras.length === 0) {
+          console.warn('No third-party cameras loaded - no enhancement will occur');
+        } else {
+          console.log(`Successfully loaded ${cameras.length} third-party cameras`);
+        }
+      } catch (error) {
+        console.error('Failed to load third-party cameras:', error);
+      } finally {
+        setIsLoadingThirdParty(false);
+      }
+    };
+
+    loadThirdPartyData();
+  }, []);
 
   // Load Verkada file information
   useEffect(() => {
@@ -121,40 +148,61 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
     // Extract manufacturer names for cleaning
     const manufacturerNames = extractManufacturerNames(verkadaModels);
 
-    // Process matches using utility function
-    const processedMatches = processModelMatches(aggregatedData, manufacturerNames, verkadaModels);
+    // Process matches using utility function with third-party enhancement
+    const processedMatches = processModelMatches(
+      aggregatedData, 
+      manufacturerNames, 
+      verkadaModels,
+      thirdPartyCameras
+    );
     setModelMatches(processedMatches);
     return processedMatches;
-  }, [data, selection, verkadaModels]);
+  }, [data, selection, verkadaModels, thirdPartyCameras]);
 
   /**
-   * Handles approval of a potential match
+   * Handles approval of a potential match with third-party enhancement
    */
   const handleApproveMatch = (matchId: string) => {
-    setModelMatches(prev => prev.map(match => 
-      match.id === matchId 
-        ? { ...match, matchType: 'identified' as MatchType }
-        : match
-    ));
+    setModelMatches(prev => prev.map(match => {
+      if (match.id === matchId) {
+        let updatedMatch = { ...match, matchType: 'identified' as MatchType };
+        
+        // Apply third-party enhancement after approval
+        if (thirdPartyCameras.length > 0) {
+          updatedMatch = enhanceWithThirdPartyData(updatedMatch, thirdPartyCameras);
+        }
+        
+        return updatedMatch;
+      }
+      return match;
+    }));
   };
 
   /**
-   * Handles decline of a potential match - clears Verkada details
+   * Handles decline of a potential match with third-party enhancement
    */
   const handleDeclineMatch = (matchId: string) => {
-    setModelMatches(prev => prev.map(match => 
-      match.id === matchId 
-        ? { 
-            ...match, 
-            matchType: 'declined' as MatchType,
-            // Clear all Verkada-related details when declined
-            matchedWith: undefined,
-            verkadaDetails: undefined,
-            compatibilityType: undefined,
-            similarity: undefined
-          }
-        : match
-    ));
+    setModelMatches(prev => prev.map(match => {
+      if (match.id === matchId) {
+        let updatedMatch = { 
+          ...match, 
+          matchType: 'declined' as MatchType,
+          // Clear all Verkada-related details when declined
+          matchedWith: undefined,
+          verkadaDetails: undefined,
+          compatibilityType: undefined,
+          similarity: undefined
+        };
+        
+        // Apply third-party enhancement after decline
+        if (thirdPartyCameras.length > 0) {
+          updatedMatch = enhanceWithThirdPartyData(updatedMatch, thirdPartyCameras);
+        }
+        
+        return updatedMatch;
+      }
+      return match;
+    }));
   };
 
   /**
@@ -433,6 +481,12 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
           <span>
             Camera Data has been cleaned to remove IP addresses, MAC addresses, dates, and common words.
           </span>
+          {thirdPartyCameras.length > 0 && (
+            <>
+              <span className="mx-2">•</span>
+              <span>Enhanced with {thirdPartyCameras.length} third-party camera specifications.</span>
+            </>
+          )}
         </div>
       </div>
 
@@ -646,6 +700,14 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                               >
                                 <Edit className="w-4 h-4" />
                               </button>
+                              {result.thirdPartyEnhanced && (
+                                <div
+                                  className="p-2 text-gray-600 dark:text-gray-400 rounded-md"
+                                  title="Enhanced with third-party database"
+                                >
+                                  <Eye className="w-4 h-4" />
+                                </div>
+                              )}
                               {hasDetails && (
                                 <button
                                   onClick={() => toggleRowExpansion(modelKey)}
@@ -690,6 +752,12 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                             <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-3 flex items-center">
                               <Info className="w-4 h-4 text-blue-600 dark:text-blue-400 mr-2" />
                               Verkada Compatibility Details
+                              {result.thirdPartyEnhanced && (
+                                <span className="ml-2 inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-200">
+                                  <Eye className="w-3 h-3 mr-1" />
+                                  Enhanced
+                                </span>
+                              )}
                             </h4>
                             <div className="grid md:grid-cols-2 gap-4">
                               <div>

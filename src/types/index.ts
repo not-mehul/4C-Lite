@@ -54,6 +54,7 @@ export interface ModelMatch {
   compatibilityType?: CompatibilityType;
   editedDetails?: CameraDetails; // User-edited camera details
   isEditing?: boolean; // Whether currently in edit mode
+  thirdPartyEnhanced?: boolean; // Whether enhanced with third-party data
 }
 
 /** Verkada model compatibility information */
@@ -62,6 +63,19 @@ export interface VerkadaModel {
   modelName: string;
   minimumFirmware: string;
   notes: string;
+}
+
+/** Third-party camera database entry */
+export interface ThirdPartyCamera {
+  model: string;
+  manufacturer: string;
+  resolution_mp: number;
+  channel_count: number;
+  aliases?: string[];
+  protocols: {
+    'onvif-s': boolean;
+    rtsp: boolean;
+  };
 }
 
 /** File information for Verkada compatibility data */
