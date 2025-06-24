@@ -718,7 +718,9 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                             <span
                               className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-teal-100 dark:bg-teal-900/40 text-teal-800 dark:text-teal-200"
                               title="Enhanced with third-party database"
-                            ><Eye className="w-3 h-3 mr-1" />                              
+                            >
+                              <Eye className="w-3 h-3 mr-1" />
+                              Observed
                             </span>
                           )}
                         </div>
