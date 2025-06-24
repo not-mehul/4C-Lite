@@ -1,21 +1,21 @@
 - model: P3707-PE
   manufacturer: Axis Communications
-  resolution_mp: 2
-  channel_count: 4
+  resolution_mp: 9
+  channel_count: 5
   protocols:
     onvif-s: true
     rtsp: true
 - model: P3225-LV
   manufacturer: Axis Communications  
-  resolution_mp: 2
-  channel_count: 1
+  resolution_mp: 8
+  channel_count: 4
   protocols:
     onvif-s: true
     rtsp: true
 - model: P3925-R
   manufacturer: Axis Communications  
-  resolution_mp: 2
-  channel_count: 1
+  resolution_mp: 9
+  channel_count: 7
   protocols:
     onvif-s: true
     rtsp: true
