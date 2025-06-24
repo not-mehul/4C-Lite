@@ -512,12 +512,22 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
         )}
 
         <div className="flex items-center justify-center text-sm text-blue-600 dark:text-blue-400">
-          <ul>
+          <ul className="space-y-1">
             <li>- Camera Data has been cleaned to remove IP addresses, MAC addresses, dates, and common words.</li>
             {thirdPartyCameras.length > 0 && (
               <li>- This data has also been checked against observed third-party camera database containing {thirdPartyCameras.length} models.</li>
             )}
-            <li>For Usage Instructions visit: <a>https://paradoxicalbit.com</a> https://paradoxicalbit.com</li>
+            <li>
+              For Usage Instructions visit:{' '}
+              <a 
+                href="https://paradoxicalbit.com" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-blue-700 dark:text-blue-300 hover:text-blue-800 dark:hover:text-blue-200 underline hover:no-underline transition-colors duration-200"
+              >
+                https://paradoxicalbit.com
+              </a>
+            </li>
           </ul>          
         </div>
       </div>
