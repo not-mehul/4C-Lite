@@ -6,6 +6,7 @@
     - M1114
     - Q3515
     - R3515
+    - M3058
   protocols:
     onvif-s: false
     rtsp: true
