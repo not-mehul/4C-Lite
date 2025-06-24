@@ -572,6 +572,20 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
           </div>
         </div>
 
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 transition-colors duration-300">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-red-600 dark:text-red-400">No Matches</p>
+              <p className="text-xl font-bold text-red-600 dark:text-red-400">
+                {(noMatches.length + declinedMatches.length).toLocaleString()}
+              </p>
+              <p className="text-xs text-red-600 dark:text-red-400 font-medium">
+                {(noMatchDeviceCount + declinedMatchDeviceCount).toLocaleString()} devices
+              </p>
+            </div>
+            <X className="w-6 h-6 text-red-600 dark:text-red-400" />
+          </div>
+        </div>
 
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 transition-colors duration-300">
           <div className="flex items-center justify-between">
@@ -585,21 +599,6 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
               </p>
             </div>
             <Edit className="w-6 h-6 text-purple-600 dark:text-purple-400" />
-          </div>
-        </div>
-
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 transition-colors duration-300">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-red-600 dark:text-red-400">No Matches</p>
-              <p className="text-xl font-bold text-red-600 dark:text-red-400">
-                {(noMatches.length + declinedMatches.length).toLocaleString()}
-              </p>
-              <p className="text-xs text-red-600 dark:text-red-400 font-medium">
-                {(noMatchDeviceCount + declinedMatchDeviceCount).toLocaleString()} devices
-              </p>
-            </div>
-            <X className="w-6 h-6 text-red-600 dark:text-red-400" />
           </div>
         </div>
       </div>
