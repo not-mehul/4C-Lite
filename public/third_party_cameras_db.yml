@@ -6,7 +6,7 @@
     M1114
     Q3515
   protocols:
-    onvif-s: true
+    onvif-s: false
     rtsp: true
 - model: Q3505
   manufacturer: Axis Communications
