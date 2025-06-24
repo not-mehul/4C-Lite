@@ -518,7 +518,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
               <li>- This data has also been checked against observed third-party camera database containing {thirdPartyCameras.length} models.</li>
             )}
             <li>
-              For Usage Instructions visit:{' '}
+              For Usage Instructions review:{' '}
               <a 
                 href="https://github.com/not-mehul/4C-Lite/blob/gh-pages/README.md" 
                 target="_blank" 
