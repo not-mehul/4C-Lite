@@ -4,6 +4,7 @@
   channel_count: 45
   alisases:
     M1114
+    Q3515
   protocols:
     onvif-s: true
     rtsp: true
