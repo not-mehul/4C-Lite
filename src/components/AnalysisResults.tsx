@@ -518,10 +518,6 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
             <li><Info className="w-4 h-4" />The data has also been checked against observed third-party camera database containing {thirdPartyCameras.length} models.</li> )}
           </ul>
           
-          
-          <span>
-             
-          </span>
           {thirdPartyCameras.length > 0 && (
             <>
               <span className="mx-2">•</span>
