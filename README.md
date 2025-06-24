@@ -2,13 +2,7 @@
 
 ## Overview
 
-The Command Connector Compatibility Calculator - Lite is a comprehensive web application designed to analyze camera inventory data against Verkada's Command Connector Hardware Compatibility List. This tool streamlines the process of determining which existing security cameras in your infrastructure are compatible with Verkada's Command Connector platform, enabling seamless integration planning and migration strategies.
-
-**Target Users:**
-- Security system integrators
-- IT administrators managing camera infrastructure
-- Verkada partners and resellers
-- Organizations planning security system migrations
+The Command Connector Compatibility Calculator - Lite is a web application designed to analyze camera inventory data against Verkada's Command Connector Hardware Compatibility List. This tool streamlines the process of determining which existing security cameras in your infrastructure are compatible with Verkada's Command Connector.
 
 **Key Benefits:**
 - Automated compatibility analysis of large camera inventories
@@ -28,7 +22,7 @@ The Command Connector Compatibility Calculator - Lite is a comprehensive web app
 - [Data Processing](#data-processing)
 - [Export Functionality](#export-functionality)
 - [Contributing](#contributing)
-- [License](#license)
+- [Frequently Asked Questions](#faq)
 
 ## Features
 
@@ -39,8 +33,8 @@ The Command Connector Compatibility Calculator - Lite is a comprehensive web app
 - Maximum file size: 25MB
 
 ### 🔍 **Intelligent Data Analysis**
-- **Exact Matching**: Direct matches against Verkada's compatibility database
-- **Potential Matching**: Similarity-based matching with confidence scoring
+- **Exact Matching**: Direct matches against Verkada's Hardware Compatibility List database
+- **Potential Matching**: Similarity-based matching using Levenshtein distance with confidence scoring
 - **Data Cleaning**: Automatic removal of IP addresses, MAC addresses, dates, and common words
 - **Third-Party Enhancement**: Cross-referencing with additional camera specification database
 
@@ -125,17 +119,15 @@ The Command Connector Compatibility Calculator - Lite is a comprehensive web app
 
 ### **Match Types Explained**
 
-- **🟢 Exact**: Direct match found in Verkada compatibility database
-- **🟡 Potential**: Similarity-based match requiring user approval
-- **🔵 Identified**: User-approved potential match
-- **🟠 Declined**: User-declined potential match  
+- **🟢 Exact**: Direct match found in Verkada Hardware Compatibility List
+- **🟡 Potential**: Similarity-based match requiring user approval with Verkada Hardware Compatibility List
+- **🔵 Identified**: User-approved potential match with Verkada Hardware Compatibility List
+- **🟠 Declined**: User-declined potential match with Verkada Hardware Compatibility List
 - **🟣 Modified**: User-edited camera specifications
-- **🔴 None**: No compatibility match found
+- **🔴 None**: No compatibility match found with Verkada Hardware Compatibility List
 - **👁️ Observed**: Enhanced with third-party camera database information
 
-### **Configuration Options**
-
-#### **Data Cleaning Settings**
+### **Data Cleaning Settings**
 The application automatically filters out:
 - IP addresses (IPv4 and IPv6)
 - MAC addresses
@@ -230,7 +222,7 @@ We welcome contributions to improve the Command Connector Compatibility Calculat
 1. **Fork the repository** on GitHub
 2. **Clone your fork** locally:
    ```bash
-   git clone https://github.com/your-username/4C-Lite.git
+   git clone https://github.com/not-mehul/4C-Lite.git
    cd 4C-Lite
    ```
 3. **Install dependencies**:
@@ -273,10 +265,6 @@ We welcome contributions to improve the Command Connector Compatibility Calculat
 - Maintain responsive design principles
 - Include comprehensive error handling
 - Write descriptive comments for complex logic
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ### **Third-Party Licenses**
 - React: MIT License
