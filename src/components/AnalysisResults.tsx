@@ -517,6 +517,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
             Camera Data has been cleaned to remove IP addresses, MAC addresses, dates, and common words.
           </span>
           {thirdPartyCameras.length > 0 && (
+            <>
               <span className="mx-2">•</span>
               <span>Enhanced with  third-party camera specifications.</span>
             </>
