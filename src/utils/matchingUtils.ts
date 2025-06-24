@@ -2,7 +2,7 @@
  * Model matching utilities for compatibility analysis
  */
 
-import { VerkadaModel, MatchType, CompatibilityType, ModelMatch } from '../types';
+import { VerkadaModel, MatchType, CompatibilityType, ModelMatch, CameraDetails } from '../types';
 import { calculateSimilarity, isSubsetMatch } from './stringUtils';
 import { preprocessModelForMatching } from './dataCleaningUtils';
 import { MIN_SIMILARITY_THRESHOLD } from './constants';
@@ -134,12 +134,13 @@ export const processModelMatches = (
   verkadaModels: VerkadaModel[]
 ): ModelMatch[] => {
   return Array.from(aggregatedData.entries())
-    .map(([model, count]) => {
+    .map(([model, count], index) => {
       const cleaningResult = cleanModelData(model, manufacturerNames);
       const cleanedModel = cleaningResult.cleaned;
       const matchInfo = findBestMatch(cleanedModel, manufacturerNames, verkadaModels);
 
       return {
+        id: `model-${index}-${Date.now()}`, // Unique identifier
         model,
         cleanedModel,
         count,
@@ -149,9 +150,26 @@ export const processModelMatches = (
         removedElements: cleaningResult.removedElements,
         verkadaDetails: matchInfo.verkadaDetails,
         compatibilityType: matchInfo.compatibilityType,
+        isEditing: false,
       } as ModelMatch;
     })
     .sort((a, b) => b.count - a.count);
+};
+
+/**
+ * Creates default camera details from a model match
+ * @param match Model match to extract details from
+ * @returns Default camera details object
+ */
+export const createDefaultCameraDetails = (match: ModelMatch): CameraDetails => {
+  return {
+    modelName: match.matchedWith || match.cleanedModel || match.model,
+    manufacturer: match.verkadaDetails?.manufacturer || '',
+    minimumFirmware: match.verkadaDetails?.minimumFirmware || '',
+    notes: match.verkadaDetails?.notes || '',
+    resolutionMp: 2.0, // Default resolution
+    channelCount: 1, // Default channel count
+  };
 };
 
 // Import cleanModelData to avoid circular dependency

@@ -24,13 +24,24 @@ export interface ColumnSelection {
 export type UploadStep = 'upload' | 'preview' | 'analysis';
 
 /** Match types for compatibility analysis */
-export type MatchType = 'exact' | 'potential' | 'none';
+export type MatchType = 'exact' | 'potential' | 'none' | 'identified' | 'declined';
 
 /** Compatibility integration types */
 export type CompatibilityType = 'RTSP' | 'ONVIF-S';
 
+/** Camera details for editing */
+export interface CameraDetails {
+  modelName: string;
+  manufacturer: string;
+  minimumFirmware: string;
+  notes: string;
+  resolutionMp: number;
+  channelCount: number;
+}
+
 /** Model matching result with compatibility details */
 export interface ModelMatch {
+  id: string; // Unique identifier for tracking edits
   model: string;
   cleanedModel: string;
   count: number;
@@ -40,6 +51,8 @@ export interface ModelMatch {
   removedElements?: string[];
   verkadaDetails?: VerkadaModel;
   compatibilityType?: CompatibilityType;
+  editedDetails?: CameraDetails; // User-edited camera details
+  isEditing?: boolean; // Whether currently in edit mode
 }
 
 /** Verkada model compatibility information */
@@ -61,4 +74,14 @@ export interface CleaningResult {
   original: string;
   cleaned: string;
   removedElements: string[];
+}
+
+/** Form validation errors */
+export interface ValidationErrors {
+  modelName?: string;
+  manufacturer?: string;
+  minimumFirmware?: string;
+  notes?: string;
+  resolutionMp?: string;
+  channelCount?: string;
 }

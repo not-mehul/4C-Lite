@@ -13,10 +13,14 @@ import {
   Info,
   Calendar,
   Database,
+  Edit,
+  Save,
 } from 'lucide-react';
-import { CSVData, ColumnSelection, VerkadaModel, ModelMatch, VerkadaFileInfo, CompatibilityType } from '../types';
+import { CSVData, ColumnSelection, VerkadaModel, ModelMatch, VerkadaFileInfo, CompatibilityType, CameraDetails, MatchType } from '../types';
 import { extractManufacturerNames } from '../utils/dataCleaningUtils';
-import { processModelMatches } from '../utils/matchingUtils';
+import { processModelMatches, createDefaultCameraDetails } from '../utils/matchingUtils';
+import { CameraEditForm } from './CameraEditForm';
+import { MatchActionButtons } from './MatchActionButtons';
 
 interface AnalysisResultsProps {
   data: CSVData;
@@ -33,6 +37,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
 }) => {
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   const [verkadaFileInfo, setVerkadaFileInfo] = useState<VerkadaFileInfo | null>(null);
+  const [modelMatches, setModelMatches] = useState<ModelMatch[]>([]);
 
   // Load Verkada file information
   useEffect(() => {
@@ -117,17 +122,85 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
     const manufacturerNames = extractManufacturerNames(verkadaModels);
 
     // Process matches using utility function
-    return processModelMatches(aggregatedData, manufacturerNames, verkadaModels);
+    const processedMatches = processModelMatches(aggregatedData, manufacturerNames, verkadaModels);
+    setModelMatches(processedMatches);
+    return processedMatches;
   }, [data, selection, verkadaModels]);
 
-  // Calculate statistics
-  const totalCount = results.reduce((sum, result) => sum + result.count, 0);
-  const exactMatches = results.filter((r) => r.matchType === 'exact');
-  const potentialMatches = results.filter((r) => r.matchType === 'potential');
-  const noMatches = results.filter((r) => r.matchType === 'none');
+  /**
+   * Handles approval of a potential match
+   */
+  const handleApproveMatch = (matchId: string) => {
+    setModelMatches(prev => prev.map(match => 
+      match.id === matchId 
+        ? { ...match, matchType: 'identified' as MatchType }
+        : match
+    ));
+  };
+
+  /**
+   * Handles decline of a potential match
+   */
+  const handleDeclineMatch = (matchId: string) => {
+    setModelMatches(prev => prev.map(match => 
+      match.id === matchId 
+        ? { ...match, matchType: 'declined' as MatchType }
+        : match
+    ));
+  };
+
+  /**
+   * Starts editing mode for a camera
+   */
+  const handleStartEdit = (matchId: string) => {
+    setModelMatches(prev => prev.map(match => 
+      match.id === matchId 
+        ? { ...match, isEditing: true }
+        : match
+    ));
+  };
+
+  /**
+   * Saves edited camera details
+   */
+  const handleSaveEdit = (matchId: string, details: CameraDetails) => {
+    setModelMatches(prev => prev.map(match => 
+      match.id === matchId 
+        ? { ...match, editedDetails: details, isEditing: false }
+        : match
+    ));
+  };
+
+  /**
+   * Cancels editing mode
+   */
+  const handleCancelEdit = (matchId: string) => {
+    setModelMatches(prev => prev.map(match => 
+      match.id === matchId 
+        ? { ...match, isEditing: false }
+        : match
+    ));
+  };
+
+  /**
+   * Checks if editing is allowed for a match type
+   */
+  const isEditingAllowed = (matchType: MatchType): boolean => {
+    return matchType !== 'potential';
+  };
+
+  // Calculate statistics using current modelMatches state
+  const totalCount = modelMatches.reduce((sum, result) => sum + result.count, 0);
+  const exactMatches = modelMatches.filter((r) => r.matchType === 'exact');
+  const potentialMatches = modelMatches.filter((r) => r.matchType === 'potential');
+  const identifiedMatches = modelMatches.filter((r) => r.matchType === 'identified');
+  const declinedMatches = modelMatches.filter((r) => r.matchType === 'declined');
+  const noMatches = modelMatches.filter((r) => r.matchType === 'none');
 
   const exactMatchDeviceCount = exactMatches.reduce((sum, match) => sum + match.count, 0);
   const potentialMatchDeviceCount = potentialMatches.reduce((sum, match) => sum + match.count, 0);
+  const identifiedMatchDeviceCount = identifiedMatches.reduce((sum, match) => sum + match.count, 0);
+  const declinedMatchDeviceCount = declinedMatches.reduce((sum, match) => sum + match.count, 0);
   const noMatchDeviceCount = noMatches.reduce((sum, match) => sum + match.count, 0);
 
   /**
@@ -143,8 +216,12 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
         'Compatibility Type',
         'Minimum Firmware',
         'Notes',
+        'Edited Model Name',
+        'Edited Manufacturer',
+        'Edited Resolution (MP)',
+        'Edited Channel Count',
       ],
-      ...results.map((result) => [
+      ...modelMatches.map((result) => [
         result.model,
         result.count.toString(),
         result.matchType,
@@ -152,6 +229,10 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
         result.compatibilityType || '',
         result.verkadaDetails?.minimumFirmware || '',
         result.verkadaDetails?.notes || '',
+        result.editedDetails?.modelName || '',
+        result.editedDetails?.manufacturer || '',
+        result.editedDetails?.resolutionMp?.toString() || '',
+        result.editedDetails?.channelCount?.toString() || '',
       ]),
     ]
       .map((row) => row.join(','))
@@ -177,6 +258,10 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
         return <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400" />;
       case 'potential':
         return <AlertTriangle className="w-4 h-4 text-yellow-600 dark:text-yellow-400" />;
+      case 'identified':
+        return <CheckCircle className="w-4 h-4 text-blue-600 dark:text-blue-400" />;
+      case 'declined':
+        return <X className="w-4 h-4 text-orange-600 dark:text-orange-400" />;
       case 'none':
         return <X className="w-4 h-4 text-red-600 dark:text-red-400" />;
       default:
@@ -193,10 +278,34 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
         return 'text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20';
       case 'potential':
         return 'text-yellow-600 dark:text-yellow-400 bg-yellow-50 dark:bg-yellow-900/20';
+      case 'identified':
+        return 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20';
+      case 'declined':
+        return 'text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20';
       case 'none':
         return 'text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20';
       default:
         return '';
+    }
+  };
+
+  /**
+   * Returns human-readable match type label
+   */
+  const getMatchTypeLabel = (matchType: string) => {
+    switch (matchType) {
+      case 'exact':
+        return 'Exact Match';
+      case 'potential':
+        return 'Potential Match';
+      case 'identified':
+        return 'Identified Match';
+      case 'declined':
+        return 'Declined Match';
+      case 'none':
+        return 'No Match';
+      default:
+        return matchType;
     }
   };
 
@@ -305,85 +414,79 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
       </div>
 
       {/* Enhanced Summary Cards */}
-      <div className="grid md:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 transition-colors duration-300">
+      <div className="grid md:grid-cols-5 gap-4 mb-8">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 transition-colors duration-300">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Models</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                {results.length.toLocaleString()}
+              <p className="text-xl font-bold text-gray-900 dark:text-white">
+                {modelMatches.length.toLocaleString()}
               </p>
-              <div className="mt-2 space-y-1">
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                  Total {selection.countColumn || 'Devices'}: {totalCount.toLocaleString()}
-                </p>
-              </div>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                {totalCount.toLocaleString()} {selection.countColumn || 'devices'}
+              </p>
             </div>
-            <BarChart className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+            <BarChart className="w-6 h-6 text-blue-600 dark:text-blue-400" />
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 transition-colors duration-300">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 transition-colors duration-300">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-green-600 dark:text-green-400">
-                Exact Matches
-              </p>
-              <p className="text-2xl font-bold text-green-600 dark:text-green-400">
+              <p className="text-sm font-medium text-green-600 dark:text-green-400">Exact Matches</p>
+              <p className="text-xl font-bold text-green-600 dark:text-green-400">
                 {exactMatches.length.toLocaleString()}
               </p>
-              <div className="mt-2 space-y-1">
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                  {((exactMatches.length / results.length) * 100).toFixed(1)}% of models
-                </p>
-                <p className="text-xs text-green-600 dark:text-green-400 font-medium">
-                  {exactMatchDeviceCount.toLocaleString()} {selection.countColumn || 'devices'} ({((exactMatchDeviceCount / totalCount) * 100).toFixed(1)}%)
-                </p>
-              </div>
+              <p className="text-xs text-green-600 dark:text-green-400 font-medium">
+                {exactMatchDeviceCount.toLocaleString()} devices
+              </p>
             </div>
-            <CheckCircle className="w-8 h-8 text-green-600 dark:text-green-400" />
+            <CheckCircle className="w-6 h-6 text-green-600 dark:text-green-400" />
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 transition-colors duration-300">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 transition-colors duration-300">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-yellow-600 dark:text-yellow-400">
-                Potential Matches
-              </p>
-              <p className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
+              <p className="text-sm font-medium text-yellow-600 dark:text-yellow-400">Potential</p>
+              <p className="text-xl font-bold text-yellow-600 dark:text-yellow-400">
                 {potentialMatches.length.toLocaleString()}
               </p>
-              <div className="mt-2 space-y-1">
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                  {((potentialMatches.length / results.length) * 100).toFixed(1)}% of models
-                </p>
-                <p className="text-xs text-yellow-600 dark:text-yellow-400 font-medium">
-                  {potentialMatchDeviceCount.toLocaleString()} {selection.countColumn || 'devices'} ({((potentialMatchDeviceCount / totalCount) * 100).toFixed(1)}%)
-                </p>
-              </div>
+              <p className="text-xs text-yellow-600 dark:text-yellow-400 font-medium">
+                {potentialMatchDeviceCount.toLocaleString()} devices
+              </p>
             </div>
-            <AlertTriangle className="w-8 h-8 text-yellow-600 dark:text-yellow-400" />
+            <AlertTriangle className="w-6 h-6 text-yellow-600 dark:text-yellow-400" />
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 transition-colors duration-300">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 transition-colors duration-300">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-blue-600 dark:text-blue-400">Identified</p>
+              <p className="text-xl font-bold text-blue-600 dark:text-blue-400">
+                {identifiedMatches.length.toLocaleString()}
+              </p>
+              <p className="text-xs text-blue-600 dark:text-blue-400 font-medium">
+                {identifiedMatchDeviceCount.toLocaleString()} devices
+              </p>
+            </div>
+            <CheckCircle className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+          </div>
+        </div>
+
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 transition-colors duration-300">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-red-600 dark:text-red-400">No Matches</p>
-              <p className="text-2xl font-bold text-red-600 dark:text-red-400">
-                {noMatches.length.toLocaleString()}
+              <p className="text-xl font-bold text-red-600 dark:text-red-400">
+                {(noMatches.length + declinedMatches.length).toLocaleString()}
               </p>
-              <div className="mt-2 space-y-1">
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                  {((noMatches.length / results.length) * 100).toFixed(1)}% of models
-                </p>
-                <p className="text-xs text-red-600 dark:text-red-400 font-medium">
-                  {noMatchDeviceCount.toLocaleString()} {selection.countColumn || 'devices'} ({((noMatchDeviceCount / totalCount) * 100).toFixed(1)}%)
-                </p>
-              </div>
+              <p className="text-xs text-red-600 dark:text-red-400 font-medium">
+                {(noMatchDeviceCount + declinedMatchDeviceCount).toLocaleString()} devices
+              </p>
             </div>
-            <X className="w-8 h-8 text-red-600 dark:text-red-400" />
+            <X className="w-6 h-6 text-red-600 dark:text-red-400" />
           </div>
         </div>
       </div>
@@ -392,7 +495,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden mb-8 transition-colors duration-300">
         <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
           <h3 className="text-lg font-medium text-gray-900 dark:text-white">
-            Compatibility Results
+            Compatibility Results & Camera Management
           </h3>
         </div>
 
@@ -416,18 +519,17 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                   {selection.countColumn || 'Count'}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Details
+                  Actions
                 </th>
               </tr>
             </thead>
             <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-              {results.map((result, index) => {
+              {modelMatches.map((result, index) => {
                 const percentage = ((result.count / totalCount) * 100).toFixed(1);
                 const modelKey = `${result.model}-${index}`;
                 const isExpanded = expandedRows.has(modelKey);
-                const hasDetails =
-                  result.verkadaDetails &&
-                  (result.matchType === 'exact' || result.matchType === 'potential');
+                const hasDetails = result.verkadaDetails && 
+                  (result.matchType === 'exact' || result.matchType === 'potential' || result.matchType === 'identified');
 
                 return (
                   <React.Fragment key={modelKey}>
@@ -443,25 +545,26 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                             </span>
                           )}
                         </div>
-                        {result.removedElements &&
-                          result.removedElements.length > 0 && (
-                            <div
-                              className="text-xs text-gray-500 dark:text-gray-400 mt-1"
-                              title={result.removedElements.join(', ')}
-                            >
-                              Filtered: {result.removedElements.length} elements
-                            </div>
-                          )}
+                        {result.removedElements && result.removedElements.length > 0 && (
+                          <div
+                            className="text-xs text-gray-500 dark:text-gray-400 mt-1"
+                            title={result.removedElements.join(', ')}
+                          >
+                            Filtered: {result.removedElements.length} elements
+                          </div>
+                        )}
                       </td>
                       <td className="px-6 py-4">
-                        <div
-                          className="text-sm text-gray-900 dark:text-gray-100 max-w-xs"
-                          title={result.matchedWith}
-                        >
-                          {result.matchedWith || (
+                        <div className="text-sm text-gray-900 dark:text-gray-100 max-w-xs">
+                          {result.editedDetails?.modelName || result.matchedWith || (
                             <span className="text-gray-400 dark:text-gray-500">-</span>
                           )}
                         </div>
+                        {result.editedDetails && (
+                          <div className="text-xs text-blue-600 dark:text-blue-400 mt-1">
+                            Edited by user
+                          </div>
+                        )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div
@@ -470,11 +573,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                           )}`}
                         >
                           {getMatchIcon(result.matchType)}
-                          <span className="capitalize">
-                            {result.matchType === 'none'
-                              ? 'No Match'
-                              : result.matchType + ' Match'}
-                          </span>
+                          <span>{getMatchTypeLabel(result.matchType)}</span>
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -499,25 +598,58 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        {hasDetails ? (
-                          <button
-                            onClick={() => toggleRowExpansion(modelKey)}
-                            className="flex items-center space-x-1 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors duration-200"
-                            title="View compatibility details"
-                          >
-                            {isExpanded ? (
-                              <ChevronDown className="w-4 h-4" />
-                            ) : (
-                              <ChevronRight className="w-4 h-4" />
-                            )}
-                            <Info className="w-4 h-4" />
-                            <span className="text-xs font-medium">Details</span>
-                          </button>
-                        ) : (
-                          <span className="text-gray-400 dark:text-gray-500 text-xs">-</span>
-                        )}
+                        <div className="flex items-center space-x-2">
+                          {result.matchType === 'potential' ? (
+                            <MatchActionButtons
+                              onApprove={() => handleApproveMatch(result.id)}
+                              onDecline={() => handleDeclineMatch(result.id)}
+                            />
+                          ) : isEditingAllowed(result.matchType) ? (
+                            <>
+                              <button
+                                onClick={() => handleStartEdit(result.id)}
+                                className="flex items-center space-x-1 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors duration-200"
+                                title="Edit camera details"
+                              >
+                                <Edit className="w-4 h-4" />
+                                <span className="text-xs font-medium">Edit</span>
+                              </button>
+                              {hasDetails && (
+                                <button
+                                  onClick={() => toggleRowExpansion(modelKey)}
+                                  className="flex items-center space-x-1 text-gray-600 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors duration-200"
+                                  title="View compatibility details"
+                                >
+                                  {isExpanded ? (
+                                    <ChevronDown className="w-4 h-4" />
+                                  ) : (
+                                    <ChevronRight className="w-4 h-4" />
+                                  )}
+                                  <Info className="w-4 h-4" />
+                                </button>
+                              )}
+                            </>
+                          ) : (
+                            <span className="text-gray-400 dark:text-gray-500 text-xs">
+                              Locked until action taken
+                            </span>
+                          )}
+                        </div>
                       </td>
                     </tr>
+
+                    {/* Edit Form Row */}
+                    {result.isEditing && (
+                      <tr className="bg-blue-50 dark:bg-blue-900/20">
+                        <td colSpan={6} className="px-6 py-4">
+                          <CameraEditForm
+                            initialDetails={result.editedDetails || createDefaultCameraDetails(result)}
+                            onSave={(details) => handleSaveEdit(result.id, details)}
+                            onCancel={() => handleCancelEdit(result.id)}
+                          />
+                        </td>
+                      </tr>
+                    )}
 
                     {/* Expanded Details Row */}
                     {isExpanded && hasDetails && result.verkadaDetails && (
@@ -534,8 +666,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                                   Manufacturer
                                 </label>
                                 <p className="text-sm text-gray-900 dark:text-gray-100 mt-1">
-                                  {result.verkadaDetails.manufacturer ||
-                                    'Not specified'}
+                                  {result.verkadaDetails.manufacturer || 'Not specified'}
                                 </p>
                               </div>
                               <div>
@@ -543,8 +674,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                                   Minimum Firmware Required
                                 </label>
                                 <p className="text-sm text-gray-900 dark:text-gray-100 mt-1">
-                                  {result.verkadaDetails.minimumFirmware ||
-                                    'Not specified'}
+                                  {result.verkadaDetails.minimumFirmware || 'Not specified'}
                                 </p>
                               </div>
                               <div>
@@ -571,29 +701,26 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                                   </p>
                                 </div>
                               )}
-                              {result.similarity &&
-                                result.matchType === 'potential' && (
-                                  <div className="md:col-span-2">
-                                    <label className="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">
-                                      Match Confidence
-                                    </label>
-                                    <div className="flex items-center space-x-2 mt-1">
-                                      <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                                        <div
-                                          className="bg-yellow-500 dark:bg-yellow-400 h-2 rounded-full transition-all duration-500"
-                                          style={{
-                                            width: `${
-                                              result.similarity * 100
-                                            }%`,
-                                          }}
-                                        ></div>
-                                      </div>
-                                      <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                        {(result.similarity * 100).toFixed(1)}%
-                                      </span>
+                              {result.similarity && result.matchType === 'potential' && (
+                                <div className="md:col-span-2">
+                                  <label className="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+                                    Match Confidence
+                                  </label>
+                                  <div className="flex items-center space-x-2 mt-1">
+                                    <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                                      <div
+                                        className="bg-yellow-500 dark:bg-yellow-400 h-2 rounded-full transition-all duration-500"
+                                        style={{
+                                          width: `${result.similarity * 100}%`,
+                                        }}
+                                      ></div>
                                     </div>
+                                    <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                      {(result.similarity * 100).toFixed(1)}%
+                                    </span>
                                   </div>
-                                )}
+                                </div>
+                              )}
                             </div>
                           </div>
                         </td>
