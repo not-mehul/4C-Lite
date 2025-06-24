@@ -288,7 +288,7 @@ export const processModelMatches = (
         thirdPartyEnhanced: false,
       };
 
-      // Enhance with third-party data if available (including 'identified' matches)
+      // Enhance with third-party data if available (including 'identified' and 'none' matches)
       if (thirdPartyCameras.length > 0 && (matchInfo.matchType === 'exact' || matchInfo.matchType === 'identified' || matchInfo.matchType === 'none')) {
         baseMatch = enhanceWithThirdPartyData(baseMatch, thirdPartyCameras);
       }

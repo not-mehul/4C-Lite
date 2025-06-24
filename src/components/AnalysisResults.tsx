@@ -233,6 +233,21 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
   };
 
   /**
+   * Checks if details expansion is allowed for a match
+   */
+  const isDetailsExpansionAllowed = (match: ModelMatch): boolean => {
+    // Allow expansion if:
+    // 1. Has Verkada details (exact, potential, identified matches)
+    // 2. Is a 'none' match that has been enhanced with third-party data
+    // 3. Has been modified (has editedDetails)
+    return !!(
+      match.verkadaDetails || 
+      (match.matchType === 'none' && match.thirdPartyEnhanced) ||
+      match.editedDetails
+    );
+  };
+
+  /**
    * Handles YAML export of modified camera entries
    */
   const handleYAMLExport = () => {
@@ -269,8 +284,10 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
   const identifiedMatches = modelMatches.filter((r) => r.matchType === 'identified');
   const declinedMatches = modelMatches.filter((r) => r.matchType === 'declined');
   const modifiedMatches = modelMatches.filter((r) => r.matchType === 'modified');
-  const enhancedMatches = modelMatches.filter((r) => r.matchType === 'enhanced');
   const noMatches = modelMatches.filter((r) => r.matchType === 'none');
+
+  // Calculate enhanced matches (additional info, not a match type)
+  const enhancedMatches = modelMatches.filter((r) => r.thirdPartyEnhanced);
 
   const exactMatchDeviceCount = exactMatches.reduce((sum, match) => sum + match.count, 0);
   const potentialMatchDeviceCount = potentialMatches.reduce((sum, match) => sum + match.count, 0);
@@ -299,6 +316,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
         'Resolution (MP)',
         'Channel Count',
         'Notes',
+        'Third Party Enhanced',
       ],
       ...modelMatches.map((result) => {
         const details = result.editedDetails;
@@ -313,6 +331,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
           details?.resolutionMp?.toString() || '',
           details?.channelCount?.toString() || '',
           details?.notes || result.verkadaDetails?.notes || '',
+          result.thirdPartyEnhanced ? 'Yes' : 'No',
         ];
       }),
     ]
@@ -345,8 +364,6 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
         return <X className="w-4 h-4 text-orange-600 dark:text-orange-400" />;
       case 'modified':
         return <Edit className="w-4 h-4 text-purple-600 dark:text-purple-400" />;
-      case 'enhanced':
-        return <Eye className="w-4 h-4 text-teal-600 dark:text-teal-400" />;
       case 'none':
         return <X className="w-4 h-4 text-red-600 dark:text-red-400" />;
       default:
@@ -369,8 +386,6 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
         return 'text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20';
       case 'modified':
         return 'text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/20';
-      case 'enhanced':
-        return 'text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-900/20';
       case 'none':
         return 'text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20';
       default:
@@ -393,8 +408,6 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
         return 'Declined';
       case 'modified':
         return 'Modified';
-      case 'enhanced':
-        return 'Enhanced';
       case 'none':
         return 'None';
       default:
@@ -689,8 +702,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                 const percentage = ((result.count / totalCount) * 100).toFixed(1);
                 const modelKey = `${result.model}-${index}`;
                 const isExpanded = expandedRows.has(modelKey);
-                const hasDetails = result.verkadaDetails && 
-                  (result.matchType === 'exact' || result.matchType === 'potential' || result.matchType === 'identified' || result.matchType === 'modified' || result.matchType === 'enhanced');
+                const hasDetails = isDetailsExpansionAllowed(result);
 
                 return (
                   <React.Fragment key={modelKey}>
@@ -723,13 +735,24 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div
-                          className={`inline-flex items-center space-x-2 px-3 py-1 rounded-full text-xs font-medium ${getMatchColor(
-                            result.matchType
-                          )}`}
-                        >
-                          {getMatchIcon(result.matchType)}
-                          <span>{getMatchTypeLabel(result.matchType)}</span>
+                        <div className="flex items-center space-x-2">
+                          <div
+                            className={`inline-flex items-center space-x-2 px-3 py-1 rounded-full text-xs font-medium ${getMatchColor(
+                              result.matchType
+                            )}`}
+                          >
+                            {getMatchIcon(result.matchType)}
+                            <span>{getMatchTypeLabel(result.matchType)}</span>
+                          </div>
+                          {result.thirdPartyEnhanced && (
+                            <span
+                              className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-teal-100 dark:bg-teal-900/40 text-teal-800 dark:text-teal-200"
+                              title="Enhanced with third-party database"
+                            >
+                              <Eye className="w-3 h-3 mr-1" />
+                              Enhanced
+                            </span>
+                          )}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -814,15 +837,15 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                     )}
 
                     {/* Expanded Details Row */}
-                    {isExpanded && hasDetails && result.verkadaDetails && (
+                    {isExpanded && hasDetails && (
                       <tr className="bg-blue-50 dark:bg-blue-900/20">
                         <td colSpan={6} className="px-6 py-4">
                           <div className="bg-white dark:bg-gray-800 rounded-lg border border-blue-200 dark:border-blue-700 p-4">
                             <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-3 flex items-center">
                               <Info className="w-4 h-4 text-blue-600 dark:text-blue-400 mr-2" />
-                              Verkada Compatibility Details
+                              Camera Compatibility Details
                               {result.thirdPartyEnhanced && (
-                                <span className="ml-2 inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-200">
+                                <span className="ml-2 inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-teal-100 dark:bg-teal-900/40 text-teal-800 dark:text-teal-200">
                                   <Eye className="w-3 h-3 mr-1" />
                                   Enhanced
                                 </span>
@@ -834,7 +857,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                                   Manufacturer
                                 </label>
                                 <p className="text-sm text-gray-900 dark:text-gray-100 mt-1">
-                                  {result.editedDetails?.manufacturer || result.verkadaDetails.manufacturer || 'Not specified'}
+                                  {result.editedDetails?.manufacturer || result.verkadaDetails?.manufacturer || 'Not specified'}
                                 </p>
                               </div>
                               <div>
@@ -842,7 +865,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                                   Minimum Firmware Required
                                 </label>
                                 <p className="text-sm text-gray-900 dark:text-gray-100 mt-1">
-                                  {result.editedDetails?.minimumFirmware || result.verkadaDetails.minimumFirmware || 'Not specified'}
+                                  {result.editedDetails?.minimumFirmware || result.verkadaDetails?.minimumFirmware || 'Not specified'}
                                 </p>
                               </div>
                               <div>
@@ -881,13 +904,13 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                                   </p>
                                 </div>
                               )}
-                              {(result.editedDetails?.notes || result.verkadaDetails.notes) && (
+                              {(result.editedDetails?.notes || result.verkadaDetails?.notes) && (
                                 <div className="md:col-span-2">
                                   <label className="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">
                                     Notes & Additional Information
                                   </label>
                                   <p className="text-sm text-gray-900 dark:text-gray-100 mt-1 bg-gray-50 dark:bg-gray-700 p-3 rounded border border-gray-200 dark:border-gray-600">
-                                    {result.editedDetails?.notes || result.verkadaDetails.notes}
+                                    {result.editedDetails?.notes || result.verkadaDetails?.notes}
                                   </p>
                                 </div>
                               )}

@@ -23,7 +23,7 @@ export interface ColumnSelection {
 /** Application workflow steps */
 export type UploadStep = 'upload' | 'preview' | 'analysis';
 
-/** Match types for compatibility analysis */
+/** Match types for compatibility analysis - Enhanced is NOT a match type */
 export type MatchType = 'exact' | 'potential' | 'none' | 'identified' | 'declined' | 'modified';
 
 /** Compatibility integration types */
@@ -54,7 +54,7 @@ export interface ModelMatch {
   compatibilityType?: CompatibilityType;
   editedDetails?: CameraDetails; // User-edited camera details
   isEditing?: boolean; // Whether currently in edit mode
-  thirdPartyEnhanced?: boolean; // Whether enhanced with third-party data
+  thirdPartyEnhanced?: boolean; // Whether enhanced with third-party data (additional info flag)
   thirdPartyMatch?: ThirdPartyCamera; // Original third-party match for export
 }
 
