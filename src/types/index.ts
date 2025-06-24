@@ -24,7 +24,7 @@ export interface ColumnSelection {
 export type UploadStep = 'upload' | 'preview' | 'analysis';
 
 /** Match types for compatibility analysis */
-export type MatchType = 'exact' | 'potential' | 'none' | 'identified' | 'declined' | 'modified' | 'enhanced';
+export type MatchType = 'exact' | 'potential' | 'none' | 'identified' | 'declined' | 'modified';
 
 /** Compatibility integration types */
 export type CompatibilityType = 'RTSP' | 'ONVIF-S';

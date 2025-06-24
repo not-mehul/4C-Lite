@@ -45,18 +45,14 @@ const convertMatchToYAMLCamera = (match: ModelMatch): YAMLExportCamera => {
 };
 
 /**
- * Filters model matches to find only modified entries suitable for export
+ * Filters model matches to find only 'modified' entries suitable for export
  * @param modelMatches Array of all model matches
- * @returns Array of modified model matches
+ * @returns Array of modified model matches only
  */
 export const getModifiedCameraEntries = (modelMatches: ModelMatch[]): ModelMatch[] => {
   return modelMatches.filter(match => {
-    // Include matches that have been modified, enhanced, or have edited details
-    return (
-      match.matchType === 'modified' ||
-      match.matchType === 'enhanced' ||
-      (match.editedDetails && match.matchType !== 'potential')
-    );
+    // Only include matches that have been explicitly modified by the user
+    return match.matchType === 'modified';
   });
 };
 

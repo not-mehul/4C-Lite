@@ -174,7 +174,7 @@ export const processPotentialMatchApproval = (
   match: ModelMatch,
   thirdPartyCameras: ThirdPartyCamera[]
 ): ModelMatch => {
-  // First, set to identified status
+  // Set to identified status
   let updatedMatch = { ...match, matchType: 'identified' as MatchType };
   
   // Try to find third-party match
@@ -192,10 +192,9 @@ export const processPotentialMatchApproval = (
       integrationType: getPreferredIntegrationType(thirdPartyMatch.protocols),
     };
 
-    // Update to enhanced status with third-party data
+    // Update with third-party enhancement
     updatedMatch = {
       ...updatedMatch,
-      matchType: 'enhanced' as MatchType,
       editedDetails: enhancedDetails,
       compatibilityType: enhancedDetails.integrationType,
       thirdPartyEnhanced: true,
@@ -216,7 +215,7 @@ export const processPotentialMatchDecline = (
   match: ModelMatch,
   thirdPartyCameras: ThirdPartyCamera[]
 ): ModelMatch => {
-  // First, set to declined status and clear Verkada data
+  // Set to declined status and clear Verkada data
   let updatedMatch = { 
     ...match, 
     matchType: 'declined' as MatchType,
@@ -241,10 +240,9 @@ export const processPotentialMatchDecline = (
       integrationType: getPreferredIntegrationType(thirdPartyMatch.protocols),
     };
 
-    // Update to enhanced status with third-party data
+    // Update with third-party enhancement
     updatedMatch = {
       ...updatedMatch,
-      matchType: 'enhanced' as MatchType,
       editedDetails: enhancedDetails,
       compatibilityType: enhancedDetails.integrationType,
       thirdPartyEnhanced: true,
@@ -290,8 +288,8 @@ export const processModelMatches = (
         thirdPartyEnhanced: false,
       };
 
-      // Enhance with third-party data if available
-      if (thirdPartyCameras.length > 0) {
+      // Enhance with third-party data if available (including 'identified' matches)
+      if (thirdPartyCameras.length > 0 && (matchInfo.matchType === 'exact' || matchInfo.matchType === 'identified' || matchInfo.matchType === 'none')) {
         baseMatch = enhanceWithThirdPartyData(baseMatch, thirdPartyCameras);
       }
 
