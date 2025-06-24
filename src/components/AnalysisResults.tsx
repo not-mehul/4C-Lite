@@ -762,14 +762,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                               >
                                 <Edit className="w-4 h-4" />
                               </button>
-                              {result.thirdPartyEnhanced && (
-                                <div
-                                  className="p-2 text-gray-600 dark:text-gray-400 rounded-md"
-                                  title="Enhanced with third-party database"
-                                >
-                                  <Eye className="w-4 h-4" />
-                                </div>
-                              )}
+                              
                               {hasDetails && (
                                 <button
                                   onClick={() => toggleRowExpansion(modelKey)}
