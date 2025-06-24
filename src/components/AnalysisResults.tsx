@@ -16,11 +16,13 @@ import {
   Edit,
   Save,
   Eye,
+  FileDown,
 } from 'lucide-react';
 import { CSVData, ColumnSelection, VerkadaModel, ModelMatch, VerkadaFileInfo, CompatibilityType, CameraDetails, MatchType, ThirdPartyCamera } from '../types';
 import { extractManufacturerNames } from '../utils/dataCleaningUtils';
-import { processModelMatches, createDefaultCameraDetails, enhanceWithThirdPartyData } from '../utils/matchingUtils';
+import { processModelMatches, createDefaultCameraDetails, processPotentialMatchApproval, processPotentialMatchDecline } from '../utils/matchingUtils';
 import { loadThirdPartyCameras } from '../utils/thirdPartyLoader';
+import { getModifiedCameraEntries, generateYAMLExport, downloadYAMLFile, validateYAMLExportData } from '../utils/yamlExportUtils';
 import { CameraEditForm } from './CameraEditForm';
 import { MatchActionButtons } from './MatchActionButtons';
 
@@ -42,6 +44,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
   const [modelMatches, setModelMatches] = useState<ModelMatch[]>([]);
   const [thirdPartyCameras, setThirdPartyCameras] = useState<ThirdPartyCamera[]>([]);
   const [isLoadingThirdParty, setIsLoadingThirdParty] = useState(true);
+  const [yamlExportError, setYamlExportError] = useState<string | null>(null);
 
   // Load third-party camera database
   useEffect(() => {
@@ -160,46 +163,24 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
   }, [data, selection, verkadaModels, thirdPartyCameras]);
 
   /**
-   * Handles approval of a potential match with third-party enhancement
+   * Handles approval of a potential match with enhanced third-party processing
    */
   const handleApproveMatch = (matchId: string) => {
     setModelMatches(prev => prev.map(match => {
       if (match.id === matchId) {
-        let updatedMatch = { ...match, matchType: 'identified' as MatchType };
-        
-        // Apply third-party enhancement after approval
-        if (thirdPartyCameras.length > 0) {
-          updatedMatch = enhanceWithThirdPartyData(updatedMatch, thirdPartyCameras);
-        }
-        
-        return updatedMatch;
+        return processPotentialMatchApproval(match, thirdPartyCameras);
       }
       return match;
     }));
   };
 
   /**
-   * Handles decline of a potential match with third-party enhancement
+   * Handles decline of a potential match with enhanced third-party processing
    */
   const handleDeclineMatch = (matchId: string) => {
     setModelMatches(prev => prev.map(match => {
       if (match.id === matchId) {
-        let updatedMatch = { 
-          ...match, 
-          matchType: 'declined' as MatchType,
-          // Clear all Verkada-related details when declined
-          matchedWith: undefined,
-          verkadaDetails: undefined,
-          compatibilityType: undefined,
-          similarity: undefined
-        };
-        
-        // Apply third-party enhancement after decline
-        if (thirdPartyCameras.length > 0) {
-          updatedMatch = enhanceWithThirdPartyData(updatedMatch, thirdPartyCameras);
-        }
-        
-        return updatedMatch;
+        return processPotentialMatchDecline(match, thirdPartyCameras);
       }
       return match;
     }));
@@ -251,6 +232,36 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
     return matchType !== 'potential';
   };
 
+  /**
+   * Handles YAML export of modified camera entries
+   */
+  const handleYAMLExport = () => {
+    try {
+      setYamlExportError(null);
+      
+      const modifiedEntries = getModifiedCameraEntries(modelMatches);
+      const validation = validateYAMLExportData(modifiedEntries);
+      
+      if (!validation.isValid) {
+        setYamlExportError(`Export validation failed: ${validation.errors.join(', ')}`);
+        return;
+      }
+      
+      if (validation.warnings.length > 0) {
+        console.warn('YAML Export warnings:', validation.warnings);
+      }
+      
+      const yamlContent = generateYAMLExport(modifiedEntries);
+      downloadYAMLFile(yamlContent);
+      
+      console.log(`Successfully exported ${modifiedEntries.length} modified camera entries`);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      setYamlExportError(errorMessage);
+      console.error('YAML export failed:', error);
+    }
+  };
+
   // Calculate statistics using current modelMatches state
   const totalCount = modelMatches.reduce((sum, result) => sum + result.count, 0);
   const exactMatches = modelMatches.filter((r) => r.matchType === 'exact');
@@ -258,6 +269,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
   const identifiedMatches = modelMatches.filter((r) => r.matchType === 'identified');
   const declinedMatches = modelMatches.filter((r) => r.matchType === 'declined');
   const modifiedMatches = modelMatches.filter((r) => r.matchType === 'modified');
+  const enhancedMatches = modelMatches.filter((r) => r.matchType === 'enhanced');
   const noMatches = modelMatches.filter((r) => r.matchType === 'none');
 
   const exactMatchDeviceCount = exactMatches.reduce((sum, match) => sum + match.count, 0);
@@ -265,7 +277,11 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
   const identifiedMatchDeviceCount = identifiedMatches.reduce((sum, match) => sum + match.count, 0);
   const declinedMatchDeviceCount = declinedMatches.reduce((sum, match) => sum + match.count, 0);
   const modifiedMatchDeviceCount = modifiedMatches.reduce((sum, match) => sum + match.count, 0);
+  const enhancedMatchDeviceCount = enhancedMatches.reduce((sum, match) => sum + match.count, 0);
   const noMatchDeviceCount = noMatches.reduce((sum, match) => sum + match.count, 0);
+
+  // Get modified entries for export button state
+  const modifiedCameraEntries = getModifiedCameraEntries(modelMatches);
 
   /**
    * Downloads the analysis results as a CSV file with updated format
@@ -329,6 +345,8 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
         return <X className="w-4 h-4 text-orange-600 dark:text-orange-400" />;
       case 'modified':
         return <Edit className="w-4 h-4 text-purple-600 dark:text-purple-400" />;
+      case 'enhanced':
+        return <Eye className="w-4 h-4 text-teal-600 dark:text-teal-400" />;
       case 'none':
         return <X className="w-4 h-4 text-red-600 dark:text-red-400" />;
       default:
@@ -351,6 +369,8 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
         return 'text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20';
       case 'modified':
         return 'text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/20';
+      case 'enhanced':
+        return 'text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-900/20';
       case 'none':
         return 'text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20';
       default:
@@ -373,6 +393,8 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
         return 'Declined';
       case 'modified':
         return 'Modified';
+      case 'enhanced':
+        return 'Enhanced';
       case 'none':
         return 'None';
       default:
@@ -491,7 +513,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
       </div>
 
       {/* Enhanced Summary Cards */}
-      <div className="grid md:grid-cols-6 gap-4 mb-8">
+      <div className="grid md:grid-cols-7 gap-4 mb-8">
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 transition-colors duration-300">
           <div className="flex items-center justify-between">
             <div>
@@ -570,6 +592,21 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 transition-colors duration-300">
           <div className="flex items-center justify-between">
             <div>
+              <p className="text-sm font-medium text-teal-600 dark:text-teal-400">Enhanced</p>
+              <p className="text-xl font-bold text-teal-600 dark:text-teal-400">
+                {enhancedMatches.length.toLocaleString()}
+              </p>
+              <p className="text-xs text-teal-600 dark:text-teal-400 font-medium">
+                {enhancedMatchDeviceCount.toLocaleString()} devices
+              </p>
+            </div>
+            <Eye className="w-6 h-6 text-teal-600 dark:text-teal-400" />
+          </div>
+        </div>
+
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 transition-colors duration-300">
+          <div className="flex items-center justify-between">
+            <div>
               <p className="text-sm font-medium text-red-600 dark:text-red-400">No Matches</p>
               <p className="text-xl font-bold text-red-600 dark:text-red-400">
                 {(noMatches.length + declinedMatches.length).toLocaleString()}
@@ -585,11 +622,43 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
 
       {/* Results Table */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden mb-8 transition-colors duration-300">
-        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
+        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 flex justify-between items-center">
           <h3 className="text-lg font-medium text-gray-900 dark:text-white">
             Compatibility Results & Camera Management
           </h3>
+          
+          {/* Discrete YAML Export Button */}
+          {modifiedCameraEntries.length > 0 && (
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={handleYAMLExport}
+                className="flex items-center space-x-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 px-3 py-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 text-sm"
+                title={`Export ${modifiedCameraEntries.length} modified entries to YAML`}
+              >
+                <FileDown className="w-4 h-4" />
+                <span>Export Modified ({modifiedCameraEntries.length})</span>
+              </button>
+            </div>
+          )}
         </div>
+
+        {/* YAML Export Error Display */}
+        {yamlExportError && (
+          <div className="px-6 py-3 bg-red-50 dark:bg-red-900/20 border-b border-red-200 dark:border-red-800">
+            <div className="flex items-center space-x-2">
+              <AlertTriangle className="w-4 h-4 text-red-600 dark:text-red-400" />
+              <p className="text-red-800 dark:text-red-200 text-sm">
+                Export Error: {yamlExportError}
+              </p>
+              <button
+                onClick={() => setYamlExportError(null)}
+                className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-200"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        )}
 
         <div className="overflow-x-auto">
           <table className="w-full">
@@ -621,7 +690,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                 const modelKey = `${result.model}-${index}`;
                 const isExpanded = expandedRows.has(modelKey);
                 const hasDetails = result.verkadaDetails && 
-                  (result.matchType === 'exact' || result.matchType === 'potential' || result.matchType === 'identified' || result.matchType === 'modified');
+                  (result.matchType === 'exact' || result.matchType === 'potential' || result.matchType === 'identified' || result.matchType === 'modified' || result.matchType === 'enhanced');
 
                 return (
                   <React.Fragment key={modelKey}>

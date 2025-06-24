@@ -160,7 +160,99 @@ export const enhanceWithThirdPartyData = (
     editedDetails: enhancedDetails,
     compatibilityType: enhancedDetails.integrationType,
     thirdPartyEnhanced: true,
+    thirdPartyMatch: thirdPartyMatch,
   };
+};
+
+/**
+ * Processes potential match approval with third-party enhancement
+ * @param match Model match to process
+ * @param thirdPartyCameras Array of third-party cameras
+ * @returns Enhanced model match with appropriate status
+ */
+export const processPotentialMatchApproval = (
+  match: ModelMatch,
+  thirdPartyCameras: ThirdPartyCamera[]
+): ModelMatch => {
+  // First, set to identified status
+  let updatedMatch = { ...match, matchType: 'identified' as MatchType };
+  
+  // Try to find third-party match
+  const thirdPartyMatch = findThirdPartyMatch(match.model, thirdPartyCameras);
+  
+  if (thirdPartyMatch) {
+    // Create enhanced details with third-party data
+    const enhancedDetails: CameraDetails = {
+      modelName: match.matchedWith || match.model,
+      manufacturer: thirdPartyMatch.manufacturer,
+      minimumFirmware: match.verkadaDetails?.minimumFirmware || '',
+      notes: match.verkadaDetails?.notes || '',
+      resolutionMp: thirdPartyMatch.resolution_mp,
+      channelCount: thirdPartyMatch.channel_count,
+      integrationType: getPreferredIntegrationType(thirdPartyMatch.protocols),
+    };
+
+    // Update to enhanced status with third-party data
+    updatedMatch = {
+      ...updatedMatch,
+      matchType: 'enhanced' as MatchType,
+      editedDetails: enhancedDetails,
+      compatibilityType: enhancedDetails.integrationType,
+      thirdPartyEnhanced: true,
+      thirdPartyMatch: thirdPartyMatch,
+    };
+  }
+  
+  return updatedMatch;
+};
+
+/**
+ * Processes potential match decline with third-party enhancement
+ * @param match Model match to process
+ * @param thirdPartyCameras Array of third-party cameras
+ * @returns Enhanced model match with appropriate status
+ */
+export const processPotentialMatchDecline = (
+  match: ModelMatch,
+  thirdPartyCameras: ThirdPartyCamera[]
+): ModelMatch => {
+  // First, set to declined status and clear Verkada data
+  let updatedMatch = { 
+    ...match, 
+    matchType: 'declined' as MatchType,
+    matchedWith: undefined,
+    verkadaDetails: undefined,
+    compatibilityType: undefined,
+    similarity: undefined
+  };
+  
+  // Try to find third-party match
+  const thirdPartyMatch = findThirdPartyMatch(match.model, thirdPartyCameras);
+  
+  if (thirdPartyMatch) {
+    // Create enhanced details with third-party data only
+    const enhancedDetails: CameraDetails = {
+      modelName: match.model,
+      manufacturer: thirdPartyMatch.manufacturer,
+      minimumFirmware: '',
+      notes: '',
+      resolutionMp: thirdPartyMatch.resolution_mp,
+      channelCount: thirdPartyMatch.channel_count,
+      integrationType: getPreferredIntegrationType(thirdPartyMatch.protocols),
+    };
+
+    // Update to enhanced status with third-party data
+    updatedMatch = {
+      ...updatedMatch,
+      matchType: 'enhanced' as MatchType,
+      editedDetails: enhancedDetails,
+      compatibilityType: enhancedDetails.integrationType,
+      thirdPartyEnhanced: true,
+      thirdPartyMatch: thirdPartyMatch,
+    };
+  }
+  
+  return updatedMatch;
 };
 
 /**

@@ -24,7 +24,7 @@ export interface ColumnSelection {
 export type UploadStep = 'upload' | 'preview' | 'analysis';
 
 /** Match types for compatibility analysis */
-export type MatchType = 'exact' | 'potential' | 'none' | 'identified' | 'declined' | 'modified';
+export type MatchType = 'exact' | 'potential' | 'none' | 'identified' | 'declined' | 'modified' | 'enhanced';
 
 /** Compatibility integration types */
 export type CompatibilityType = 'RTSP' | 'ONVIF-S';
@@ -55,6 +55,7 @@ export interface ModelMatch {
   editedDetails?: CameraDetails; // User-edited camera details
   isEditing?: boolean; // Whether currently in edit mode
   thirdPartyEnhanced?: boolean; // Whether enhanced with third-party data
+  thirdPartyMatch?: ThirdPartyCamera; // Original third-party match for export
 }
 
 /** Verkada model compatibility information */
@@ -100,4 +101,17 @@ export interface ValidationErrors {
   resolutionMp?: string;
   channelCount?: string;
   integrationType?: string;
+}
+
+/** Export format for YAML camera database */
+export interface YAMLExportCamera {
+  model: string;
+  manufacturer: string;
+  resolution_mp: number;
+  channel_count: number;
+  aliases?: string[];
+  protocols: {
+    'onvif-s': boolean;
+    rtsp: boolean;
+  };
 }
