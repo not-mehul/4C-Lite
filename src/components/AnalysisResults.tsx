@@ -139,12 +139,20 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
   };
 
   /**
-   * Handles decline of a potential match
+   * Handles decline of a potential match - clears Verkada details
    */
   const handleDeclineMatch = (matchId: string) => {
     setModelMatches(prev => prev.map(match => 
       match.id === matchId 
-        ? { ...match, matchType: 'declined' as MatchType }
+        ? { 
+            ...match, 
+            matchType: 'declined' as MatchType,
+            // Clear all Verkada-related details when declined
+            matchedWith: undefined,
+            verkadaDetails: undefined,
+            compatibilityType: undefined,
+            similarity: undefined
+          }
         : match
     ));
   };
