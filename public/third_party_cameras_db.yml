@@ -2,9 +2,9 @@
   manufacturer: Axis Communications
   resolution_mp: 9
   channel_count: 45
-  alisases:
-    M1114
-    Q3515
+  aliases:
+    - M1114
+    - Q3515
   protocols:
     onvif-s: false
     rtsp: true
