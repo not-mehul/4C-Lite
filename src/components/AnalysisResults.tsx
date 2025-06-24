@@ -720,7 +720,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                               title="Enhanced with third-party database"
                             >
                               <Eye className="w-3 h-3 mr-1" />
-                              Enhanced
+                              
                             </span>
                           )}
                         </div>
