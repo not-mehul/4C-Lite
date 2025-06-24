@@ -806,11 +806,11 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                           <div className="bg-white dark:bg-gray-800 rounded-lg border border-blue-200 dark:border-blue-700 p-4">
                             <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-3 flex items-center">
                               <Info className="w-4 h-4 text-blue-600 dark:text-blue-400 mr-2" />
-                              Camera Compatibility Details
+                              Camera Configuration Details
                               {result.thirdPartyEnhanced && (
                                 <span className="ml-2 inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-teal-100 dark:bg-teal-900/40 text-teal-800 dark:text-teal-200">
                                   <Eye className="w-3 h-3 mr-1" />
-                                  Enhanced
+                                  Observed
                                 </span>
                               )}
                             </h4>
@@ -875,26 +875,6 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                                   <p className="text-sm text-gray-900 dark:text-gray-100 mt-1 bg-gray-50 dark:bg-gray-700 p-3 rounded border border-gray-200 dark:border-gray-600">
                                     {result.editedDetails?.notes || result.verkadaDetails?.notes}
                                   </p>
-                                </div>
-                              )}
-                              {result.similarity && result.matchType === 'potential' && (
-                                <div className="md:col-span-2">
-                                  <label className="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">
-                                    Match Confidence
-                                  </label>
-                                  <div className="flex items-center space-x-2 mt-1">
-                                    <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                                      <div
-                                        className="bg-yellow-500 dark:bg-yellow-400 h-2 rounded-full transition-all duration-500"
-                                        style={{
-                                          width: `${result.similarity * 100}%`,
-                                        }}
-                                      ></div>
-                                    </div>
-                                    <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                      {(result.similarity * 100).toFixed(1)}%
-                                    </span>
-                                  </div>
                                 </div>
                               )}
                             </div>
