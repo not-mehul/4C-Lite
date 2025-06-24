@@ -22,7 +22,7 @@ The Command Connector Compatibility Calculator - Lite is a web application desig
 - [Data Processing](#data-processing)
 - [Export Functionality](#export-functionality)
 - [Contributing](#contributing)
-- [Frequently Asked Questions](#faq)
+- [Frequently Asked Questions](#frequently-asked-questions)
 
 ## Features
 
