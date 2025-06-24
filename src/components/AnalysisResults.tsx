@@ -689,7 +689,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                                   Manufacturer
                                 </label>
                                 <p className="text-sm text-gray-900 dark:text-gray-100 mt-1">
-                                  {result.verkadaDetails.manufacturer || 'Not specified'}
+                                  {result.editedDetails?.manufacturer || result.verkadaDetails.manufacturer || 'Not specified'}
                                 </p>
                               </div>
                               <div>
@@ -697,7 +697,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                                   Minimum Firmware Required
                                 </label>
                                 <p className="text-sm text-gray-900 dark:text-gray-100 mt-1">
-                                  {result.verkadaDetails.minimumFirmware || 'Not specified'}
+                                  {result.editedDetails?.minimumFirmware || result.verkadaDetails.minimumFirmware || 'Not specified'}
                                 </p>
                               </div>
                               <div>
@@ -714,13 +714,35 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                                   </div>
                                 </div>
                               </div>
-                              {result.verkadaDetails.notes && (
+                              {/* Resolution (MP) Field */}
+                              {(result.editedDetails?.resolutionMp || result.editedDetails?.resolutionMp === 0) && (
+                                <div>
+                                  <label className="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+                                    Resolution (MP)
+                                  </label>
+                                  <p className="text-sm text-gray-900 dark:text-gray-100 mt-1">
+                                    {result.editedDetails.resolutionMp} MP
+                                  </p>
+                                </div>
+                              )}
+                              {/* Channel Count Field */}
+                              {result.editedDetails?.channelCount && (
+                                <div>
+                                  <label className="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+                                    Channel Count
+                                  </label>
+                                  <p className="text-sm text-gray-900 dark:text-gray-100 mt-1">
+                                    {result.editedDetails.channelCount} {result.editedDetails.channelCount === 1 ? 'channel' : 'channels'}
+                                  </p>
+                                </div>
+                              )}
+                              {(result.editedDetails?.notes || result.verkadaDetails.notes) && (
                                 <div className="md:col-span-2">
                                   <label className="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">
                                     Notes & Additional Information
                                   </label>
                                   <p className="text-sm text-gray-900 dark:text-gray-100 mt-1 bg-gray-50 dark:bg-gray-700 p-3 rounded border border-gray-200 dark:border-gray-600">
-                                    {result.verkadaDetails.notes}
+                                    {result.editedDetails?.notes || result.verkadaDetails.notes}
                                   </p>
                                 </div>
                               )}
