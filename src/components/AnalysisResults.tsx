@@ -520,12 +520,12 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
             <li>
               For Usage Instructions visit:{' '}
               <a 
-                href="https://paradoxicalbit.com" 
+                href="https://github.com/not-mehul/4C-Lite/blob/gh-pages/README.md" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="text-blue-700 dark:text-blue-300 hover:text-blue-800 dark:hover:text-blue-200 underline hover:no-underline transition-colors duration-200"
               >
-                https://paradoxicalbit.com
+                README.md
               </a>
             </li>
           </ul>          
