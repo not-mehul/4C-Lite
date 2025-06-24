@@ -607,7 +607,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden mb-8 transition-colors duration-300">
         <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 flex justify-between items-center">
           <h3 className="text-lg font-medium text-gray-900 dark:text-white">
-            Compatibility Results & Camera Management
+            Compatibility Results
           </h3>
           
           {/* Discrete YAML Export Button */}
