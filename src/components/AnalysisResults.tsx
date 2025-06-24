@@ -547,10 +547,10 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
             <div>
               <p className="text-sm font-medium text-green-600 dark:text-green-400">Exact</p>
               <p className="text-xl font-bold text-green-600 dark:text-green-400">
-                {exactMatches.length.toLocaleString()}
+                {(exactMatches.length + identifiedMatches.length).toLocaleString()}
               </p>
               <p className="text-xs text-green-600 dark:text-green-400 font-medium">
-                {exactMatchDeviceCount.toLocaleString()} devices
+                {(exactMatchDeviceCount + identifiedMatchDeviceCount).toLocaleString()} devices
               </p>
             </div>
             <CheckCircle className="w-6 h-6 text-green-600 dark:text-green-400" />
@@ -572,20 +572,6 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 transition-colors duration-300">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-blue-600 dark:text-blue-400">Identified</p>
-              <p className="text-xl font-bold text-blue-600 dark:text-blue-400">
-                {identifiedMatches.length.toLocaleString()}
-              </p>
-              <p className="text-xs text-blue-600 dark:text-blue-400 font-medium">
-                {identifiedMatchDeviceCount.toLocaleString()} devices
-              </p>
-            </div>
-            <CheckCircle className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-          </div>
-        </div>
 
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 transition-colors duration-300">
           <div className="flex items-center justify-between">
@@ -599,21 +585,6 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
               </p>
             </div>
             <Edit className="w-6 h-6 text-purple-600 dark:text-purple-400" />
-          </div>
-        </div>
-
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 transition-colors duration-300">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-teal-600 dark:text-teal-400">Enhanced</p>
-              <p className="text-xl font-bold text-teal-600 dark:text-teal-400">
-                {enhancedMatches.length.toLocaleString()}
-              </p>
-              <p className="text-xs text-teal-600 dark:text-teal-400 font-medium">
-                {enhancedMatchDeviceCount.toLocaleString()} devices
-              </p>
-            </div>
-            <Eye className="w-6 h-6 text-teal-600 dark:text-teal-400" />
           </div>
         </div>
 
