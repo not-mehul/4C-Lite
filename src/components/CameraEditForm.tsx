@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Save, X, AlertCircle } from 'lucide-react';
-import { CameraDetails, ValidationErrors } from '../types';
+import { CameraDetails, ValidationErrors, CompatibilityType } from '../types';
 
 interface CameraEditFormProps {
   initialDetails?: CameraDetails;
@@ -25,6 +25,7 @@ export const CameraEditForm: React.FC<CameraEditFormProps> = ({
     notes: '',
     resolutionMp: 0,
     channelCount: 1,
+    integrationType: 'ONVIF-S',
     ...initialDetails
   });
 
@@ -48,6 +49,10 @@ export const CameraEditForm: React.FC<CameraEditFormProps> = ({
 
     if (!formData.manufacturer.trim()) {
       newErrors.manufacturer = 'Manufacturer is required';
+    }
+
+    if (!formData.integrationType) {
+      newErrors.integrationType = 'Integration type is required';
     }
 
     if (formData.resolutionMp < 0) {
@@ -83,7 +88,7 @@ export const CameraEditForm: React.FC<CameraEditFormProps> = ({
   /**
    * Handles input changes with validation
    */
-  const handleInputChange = (field: keyof CameraDetails, value: string | number) => {
+  const handleInputChange = (field: keyof CameraDetails, value: string | number | CompatibilityType) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     
     // Clear error for this field when user starts typing
@@ -98,9 +103,10 @@ export const CameraEditForm: React.FC<CameraEditFormProps> = ({
   const renderField = (
     label: string,
     field: keyof CameraDetails,
-    type: 'text' | 'number' | 'textarea' = 'text',
+    type: 'text' | 'number' | 'textarea' | 'select' = 'text',
     placeholder?: string,
-    required = false
+    required = false,
+    options?: { value: string; label: string }[]
   ) => {
     const hasError = !!errors[field];
     const value = formData[field];
@@ -129,6 +135,27 @@ export const CameraEditForm: React.FC<CameraEditFormProps> = ({
             `}
             disabled={isLoading}
           />
+        ) : type === 'select' ? (
+          <select
+            value={value as string}
+            onChange={(e) => handleInputChange(field, e.target.value as CompatibilityType)}
+            className={`
+              w-full px-3 py-2 border rounded-md shadow-sm transition-colors duration-200
+              focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+              dark:bg-gray-700 dark:border-gray-600 dark:text-white
+              ${hasError 
+                ? 'border-red-300 dark:border-red-600 bg-red-50 dark:bg-red-900/20' 
+                : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700'
+              }
+            `}
+            disabled={isLoading}
+          >
+            {options?.map(option => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
         ) : (
           <input
             type={type}
@@ -163,6 +190,11 @@ export const CameraEditForm: React.FC<CameraEditFormProps> = ({
     );
   };
 
+  const integrationTypeOptions = [
+    { value: 'ONVIF-S', label: 'ONVIF-S' },
+    { value: 'RTSP', label: 'RTSP' }
+  ];
+
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 shadow-sm">
       <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
@@ -175,7 +207,8 @@ export const CameraEditForm: React.FC<CameraEditFormProps> = ({
           {renderField('Manufacturer', 'manufacturer', 'text', 'e.g., Axis Communications', true)}
         </div>
 
-        <div className="grid md:grid-cols-2 gap-4">
+        <div className="grid md:grid-cols-3 gap-4">
+          {renderField('Integration Type', 'integrationType', 'select', undefined, true, integrationTypeOptions)}
           {renderField('Resolution (MP)', 'resolutionMp', 'number', '2.0')}
           {renderField('Channel Count', 'channelCount', 'number', '1')}
         </div>

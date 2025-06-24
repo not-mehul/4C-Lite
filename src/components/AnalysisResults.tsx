@@ -161,12 +161,18 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
   };
 
   /**
-   * Saves edited camera details
+   * Saves edited camera details and updates match type to "modified"
    */
   const handleSaveEdit = (matchId: string, details: CameraDetails) => {
     setModelMatches(prev => prev.map(match => 
       match.id === matchId 
-        ? { ...match, editedDetails: details, isEditing: false }
+        ? { 
+            ...match, 
+            editedDetails: details, 
+            isEditing: false,
+            matchType: 'modified' as MatchType,
+            compatibilityType: details.integrationType
+          }
         : match
     ));
   };
@@ -195,45 +201,48 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
   const potentialMatches = modelMatches.filter((r) => r.matchType === 'potential');
   const identifiedMatches = modelMatches.filter((r) => r.matchType === 'identified');
   const declinedMatches = modelMatches.filter((r) => r.matchType === 'declined');
+  const modifiedMatches = modelMatches.filter((r) => r.matchType === 'modified');
   const noMatches = modelMatches.filter((r) => r.matchType === 'none');
 
   const exactMatchDeviceCount = exactMatches.reduce((sum, match) => sum + match.count, 0);
   const potentialMatchDeviceCount = potentialMatches.reduce((sum, match) => sum + match.count, 0);
   const identifiedMatchDeviceCount = identifiedMatches.reduce((sum, match) => sum + match.count, 0);
   const declinedMatchDeviceCount = declinedMatches.reduce((sum, match) => sum + match.count, 0);
+  const modifiedMatchDeviceCount = modifiedMatches.reduce((sum, match) => sum + match.count, 0);
   const noMatchDeviceCount = noMatches.reduce((sum, match) => sum + match.count, 0);
 
   /**
-   * Downloads the analysis results as a CSV file
+   * Downloads the analysis results as a CSV file with updated format
    */
   const downloadResults = () => {
     const csvContent = [
       [
-        'Original Model',
-        selection.countColumn ? selection.countColumn : 'Count',
+        'Customer Model',
+        'Count',
         'Match Type',
-        'Verkada Compatible Model',
+        'Manufacturer Name',
+        'Compatible Model',
         'Compatibility Type',
         'Minimum Firmware',
+        'Resolution (MP)',
+        'Channel Count',
         'Notes',
-        'Edited Model Name',
-        'Edited Manufacturer',
-        'Edited Resolution (MP)',
-        'Edited Channel Count',
       ],
-      ...modelMatches.map((result) => [
-        result.model,
-        result.count.toString(),
-        result.matchType,
-        result.matchedWith || '',
-        result.compatibilityType || '',
-        result.verkadaDetails?.minimumFirmware || '',
-        result.verkadaDetails?.notes || '',
-        result.editedDetails?.modelName || '',
-        result.editedDetails?.manufacturer || '',
-        result.editedDetails?.resolutionMp?.toString() || '',
-        result.editedDetails?.channelCount?.toString() || '',
-      ]),
+      ...modelMatches.map((result) => {
+        const details = result.editedDetails;
+        return [
+          result.model,
+          result.count.toString(),
+          result.matchType,
+          details?.manufacturer || result.verkadaDetails?.manufacturer || '',
+          details?.modelName || result.matchedWith || '',
+          details?.integrationType || result.compatibilityType || '',
+          details?.minimumFirmware || result.verkadaDetails?.minimumFirmware || '',
+          details?.resolutionMp?.toString() || '',
+          details?.channelCount?.toString() || '',
+          details?.notes || result.verkadaDetails?.notes || '',
+        ];
+      }),
     ]
       .map((row) => row.join(','))
       .join('\n');
@@ -262,6 +271,8 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
         return <CheckCircle className="w-4 h-4 text-blue-600 dark:text-blue-400" />;
       case 'declined':
         return <X className="w-4 h-4 text-orange-600 dark:text-orange-400" />;
+      case 'modified':
+        return <Edit className="w-4 h-4 text-purple-600 dark:text-purple-400" />;
       case 'none':
         return <X className="w-4 h-4 text-red-600 dark:text-red-400" />;
       default:
@@ -282,6 +293,8 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
         return 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20';
       case 'declined':
         return 'text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20';
+      case 'modified':
+        return 'text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/20';
       case 'none':
         return 'text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20';
       default:
@@ -302,6 +315,8 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
         return 'Identified Match';
       case 'declined':
         return 'Declined Match';
+      case 'modified':
+        return 'Modified Match';
       case 'none':
         return 'No Match';
       default:
@@ -414,7 +429,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
       </div>
 
       {/* Enhanced Summary Cards */}
-      <div className="grid md:grid-cols-5 gap-4 mb-8">
+      <div className="grid md:grid-cols-6 gap-4 mb-8">
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 transition-colors duration-300">
           <div className="flex items-center justify-between">
             <div>
@@ -433,7 +448,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 transition-colors duration-300">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-green-600 dark:text-green-400">Exact Matches</p>
+              <p className="text-sm font-medium text-green-600 dark:text-green-400">Exact</p>
               <p className="text-xl font-bold text-green-600 dark:text-green-400">
                 {exactMatches.length.toLocaleString()}
               </p>
@@ -472,6 +487,21 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
               </p>
             </div>
             <CheckCircle className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+          </div>
+        </div>
+
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 transition-colors duration-300">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-purple-600 dark:text-purple-400">Modified</p>
+              <p className="text-xl font-bold text-purple-600 dark:text-purple-400">
+                {modifiedMatches.length.toLocaleString()}
+              </p>
+              <p className="text-xs text-purple-600 dark:text-purple-400 font-medium">
+                {modifiedMatchDeviceCount.toLocaleString()} devices
+              </p>
+            </div>
+            <Edit className="w-6 h-6 text-purple-600 dark:text-purple-400" />
           </div>
         </div>
 
@@ -529,7 +559,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                 const modelKey = `${result.model}-${index}`;
                 const isExpanded = expandedRows.has(modelKey);
                 const hasDetails = result.verkadaDetails && 
-                  (result.matchType === 'exact' || result.matchType === 'potential' || result.matchType === 'identified');
+                  (result.matchType === 'exact' || result.matchType === 'potential' || result.matchType === 'identified' || result.matchType === 'modified');
 
                 return (
                   <React.Fragment key={modelKey}>
@@ -560,11 +590,6 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                             <span className="text-gray-400 dark:text-gray-500">-</span>
                           )}
                         </div>
-                        {result.editedDetails && (
-                          <div className="text-xs text-blue-600 dark:text-blue-400 mt-1">
-                            Edited by user
-                          </div>
-                        )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div
@@ -577,13 +602,13 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        {result.compatibilityType ? (
+                        {(result.editedDetails?.integrationType || result.compatibilityType) ? (
                           <div
                             className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getCompatibilityTypeColor(
-                              result.compatibilityType
+                              result.editedDetails?.integrationType || result.compatibilityType!
                             )}`}
                           >
-                            {result.compatibilityType}
+                            {result.editedDetails?.integrationType || result.compatibilityType}
                           </div>
                         ) : (
                           <span className="text-gray-400 dark:text-gray-500 text-xs">-</span>
@@ -608,16 +633,15 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                             <>
                               <button
                                 onClick={() => handleStartEdit(result.id)}
-                                className="flex items-center space-x-1 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors duration-200"
+                                className="p-2 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-md transition-colors duration-200 shadow-sm hover:shadow-md"
                                 title="Edit camera details"
                               >
                                 <Edit className="w-4 h-4" />
-                                <span className="text-xs font-medium">Edit</span>
                               </button>
                               {hasDetails && (
                                 <button
                                   onClick={() => toggleRowExpansion(modelKey)}
-                                  className="flex items-center space-x-1 text-gray-600 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors duration-200"
+                                  className="p-2 text-gray-600 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/20 rounded-md transition-colors duration-200 shadow-sm hover:shadow-md"
                                   title="View compatibility details"
                                 >
                                   {isExpanded ? (
@@ -625,7 +649,6 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                                   ) : (
                                     <ChevronRight className="w-4 h-4" />
                                   )}
-                                  <Info className="w-4 h-4" />
                                 </button>
                               )}
                             </>
@@ -684,10 +707,10 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                                 <div className="mt-1">
                                   <div
                                     className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getCompatibilityTypeColor(
-                                      result.compatibilityType!
+                                      result.editedDetails?.integrationType || result.compatibilityType!
                                     )}`}
                                   >
-                                    {result.compatibilityType}
+                                    {result.editedDetails?.integrationType || result.compatibilityType}
                                   </div>
                                 </div>
                               </div>

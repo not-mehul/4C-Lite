@@ -24,7 +24,7 @@ export interface ColumnSelection {
 export type UploadStep = 'upload' | 'preview' | 'analysis';
 
 /** Match types for compatibility analysis */
-export type MatchType = 'exact' | 'potential' | 'none' | 'identified' | 'declined';
+export type MatchType = 'exact' | 'potential' | 'none' | 'identified' | 'declined' | 'modified';
 
 /** Compatibility integration types */
 export type CompatibilityType = 'RTSP' | 'ONVIF-S';
@@ -37,6 +37,7 @@ export interface CameraDetails {
   notes: string;
   resolutionMp: number;
   channelCount: number;
+  integrationType: CompatibilityType;
 }
 
 /** Model matching result with compatibility details */
@@ -84,4 +85,5 @@ export interface ValidationErrors {
   notes?: string;
   resolutionMp?: string;
   channelCount?: string;
+  integrationType?: string;
 }

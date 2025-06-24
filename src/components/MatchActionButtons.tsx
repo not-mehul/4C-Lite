@@ -16,23 +16,23 @@ export const MatchActionButtons: React.FC<MatchActionButtonsProps> = ({
   isLoading = false
 }) => {
   return (
-    <div className="flex space-x-3">
+    <div className="flex space-x-2">
       <button
         onClick={onApprove}
         disabled={isLoading}
-        className="flex items-center space-x-2 px-4 py-2 bg-green-600 dark:bg-green-500 text-white rounded-md hover:bg-green-700 dark:hover:bg-green-600 transition-colors duration-200 disabled:opacity-50"
+        className="p-2 bg-green-600 dark:bg-green-500 text-white rounded-md hover:bg-green-700 dark:hover:bg-green-600 transition-colors duration-200 disabled:opacity-50 shadow-sm hover:shadow-md"
+        title="Approve Match"
       >
         <CheckCircle className="w-4 h-4" />
-        <span>Approve Match</span>
       </button>
       
       <button
         onClick={onDecline}
         disabled={isLoading}
-        className="flex items-center space-x-2 px-4 py-2 bg-red-600 dark:bg-red-500 text-white rounded-md hover:bg-red-700 dark:hover:bg-red-600 transition-colors duration-200 disabled:opacity-50"
+        className="p-2 bg-red-600 dark:bg-red-500 text-white rounded-md hover:bg-red-700 dark:hover:bg-red-600 transition-colors duration-200 disabled:opacity-50 shadow-sm hover:shadow-md"
+        title="Decline Match"
       >
         <XCircle className="w-4 h-4" />
-        <span>Decline Match</span>
       </button>
     </div>
   );

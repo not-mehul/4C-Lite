@@ -169,6 +169,7 @@ export const createDefaultCameraDetails = (match: ModelMatch): CameraDetails => 
     notes: match.verkadaDetails?.notes || '',
     resolutionMp: 2.0, // Default resolution
     channelCount: 1, // Default channel count
+    integrationType: match.compatibilityType || 'ONVIF-S', // Default integration type
   };
 };
 
