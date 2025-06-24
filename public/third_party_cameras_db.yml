@@ -5,6 +5,7 @@
   aliases:
     - M1114
     - Q3515
+    - R3515
   protocols:
     onvif-s: false
     rtsp: true
