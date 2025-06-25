@@ -21,7 +21,7 @@ First, you'll need a file containing a list of your camera models.
 3.  The application supports several common formats: **CSV**, **Excel** (`.xlsx`, `.xls`), **OpenDocument** (`.ods`), and **Apple Numbers** (`.numbers`).
 4.  Once uploaded, the tool will automatically validate and parse your file to proceed to the next step.
 
-![4C-Lite-Upload](./images/4CL-1,jpeg)
+![4C-Lite-Upload](./images/4CL-1.jpeg)
 
 ### Step 2: Preview Your Data & Select Columns
 
@@ -33,16 +33,28 @@ Next, you'll see a preview of your data. Here, you need to tell the application 
       * If you don't select a **Count** column, the tool will simply count how many times each unique model appears in your list.
 3.  Once you've selected the **Model Column**, the "Analyze Data" button will become active. Click it to continue.
 
-![4C-Lite-Preview](./images/4CL-2,jpeg)
+![4C-Lite-Preview](./images/4CL-2.jpeg)
 
 ### Step 3: Review and Manage Your Results
 
 This is the final step, where you can see the full compatibility report.
 
 1.  **Review the Summary:** At the top, you'll find a summary of the analysis, including the total number of unique models and a breakdown of matches.
+
+![4C-Lite-Preview](./images/4CL-3.jpeg)
+
 2.  **Resolve Potential Matches:** For any "Potential" matches, use the action buttons (✔️ to approve, ✖️ to decline) to confirm their status.
+
+![4C-Lite-Preview](./images/4CL-3-a.png)
+
 3.  **Review Camera Details:** Click the expand icon (`>`) next to any camera to see more details, like firmware requirements and compatibility notes.
+
+![4C-Lite-Preview](./images/4CL-3-b.png)
+
 4.  **Edit Camera Information:** You can click the "Edit" (pencil) icon on any camera to manually modify its details, such as the integration type, resolution, or channel count. This is particularly useful for cameras that were not automatically identified or for correcting information.
+
+![4C-Lite-Preview](./images/4CL-3-c.png)
+
 5.  **Export Your Report:** Once you're finished, you can download your results.
 
 > [!TIP]
