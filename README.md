@@ -37,6 +37,8 @@ Next, you'll see a preview of your data. Here, you need to tell the application 
       * If you don't select a **Count** column, the tool will simply count how many times each unique model appears in your list.
 3.  Once you've selected the **Model Column**, the "Analyze Data" button will become active. Click it to continue.
 
+![4C-Lite Web Application-Preview](./images/4CL-2.jpeg)
+
 -----
 
 *\<p align="center"\>[Screenshot Placeholder: The data preview table, showing one column selected as "Model" (in green) and another as "Count" (in blue).]\</p\>*
