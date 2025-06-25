@@ -123,7 +123,7 @@ const findPotentialMatch = (
 };
 
 /**
- * Enhances camera details with third-party database information
+ * Enhances camera details with third-party database information using cleaned model name
  * @param match Model match to enhance
  * @param thirdPartyCameras Array of third-party cameras
  * @returns Enhanced model match with third-party data
@@ -137,8 +137,8 @@ export const enhanceWithThirdPartyData = (
     return match;
   }
 
-  // Try to find third-party match using the original model name
-  const thirdPartyMatch = findThirdPartyMatch(match.model, thirdPartyCameras);
+  // Use the cleaned model name for third-party matching instead of original
+  const thirdPartyMatch = findThirdPartyMatch(match.cleanedModel, thirdPartyCameras);
   
   if (!thirdPartyMatch) {
     return match;
@@ -146,7 +146,7 @@ export const enhanceWithThirdPartyData = (
 
   // Create or update camera details with third-party data
   const enhancedDetails: CameraDetails = {
-    modelName: match.editedDetails?.modelName || match.matchedWith || match.model,
+    modelName: match.editedDetails?.modelName || match.matchedWith || match.cleanedModel,
     manufacturer: thirdPartyMatch.manufacturer,
     minimumFirmware: match.editedDetails?.minimumFirmware || match.verkadaDetails?.minimumFirmware || '',
     notes: match.editedDetails?.notes || match.verkadaDetails?.notes || '',
@@ -165,7 +165,7 @@ export const enhanceWithThirdPartyData = (
 };
 
 /**
- * Processes potential match approval with third-party enhancement
+ * Processes potential match approval with third-party enhancement using cleaned model name
  * @param match Model match to process
  * @param thirdPartyCameras Array of third-party cameras
  * @returns Enhanced model match with appropriate status
@@ -177,13 +177,13 @@ export const processPotentialMatchApproval = (
   // Set to identified status
   let updatedMatch = { ...match, matchType: 'identified' as MatchType };
   
-  // Try to find third-party match
-  const thirdPartyMatch = findThirdPartyMatch(match.model, thirdPartyCameras);
+  // Use the cleaned model name for third-party matching
+  const thirdPartyMatch = findThirdPartyMatch(match.cleanedModel, thirdPartyCameras);
   
   if (thirdPartyMatch) {
     // Create enhanced details with third-party data
     const enhancedDetails: CameraDetails = {
-      modelName: match.matchedWith || match.model,
+      modelName: match.matchedWith || match.cleanedModel,
       manufacturer: thirdPartyMatch.manufacturer,
       minimumFirmware: match.verkadaDetails?.minimumFirmware || '',
       notes: match.verkadaDetails?.notes || '',
@@ -206,7 +206,7 @@ export const processPotentialMatchApproval = (
 };
 
 /**
- * Processes potential match decline with third-party enhancement
+ * Processes potential match decline with third-party enhancement using cleaned model name
  * @param match Model match to process
  * @param thirdPartyCameras Array of third-party cameras
  * @returns Enhanced model match with appropriate status
@@ -225,13 +225,13 @@ export const processPotentialMatchDecline = (
     similarity: undefined
   };
   
-  // Try to find third-party match
-  const thirdPartyMatch = findThirdPartyMatch(match.model, thirdPartyCameras);
+  // Use the cleaned model name for third-party matching
+  const thirdPartyMatch = findThirdPartyMatch(match.cleanedModel, thirdPartyCameras);
   
   if (thirdPartyMatch) {
     // Create enhanced details with third-party data only
     const enhancedDetails: CameraDetails = {
-      modelName: match.model,
+      modelName: match.cleanedModel,
       manufacturer: thirdPartyMatch.manufacturer,
       minimumFirmware: '',
       notes: '',

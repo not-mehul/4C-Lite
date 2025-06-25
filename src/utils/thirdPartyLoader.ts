@@ -82,102 +82,46 @@ const parseThirdPartyYAML = (yamlText: string): ThirdPartyCamera[] => {
 };
 
 /**
- * Extracts model name from a full camera string that may include manufacturer
- * @param fullModelName Full camera model string (e.g., "Advidia M-46-V" or "Panasonic / i-PRO WV-X8570N")
- * @returns Extracted model name without manufacturer prefix
- */
-const extractModelName = (fullModelName: string): string => {
-  if (!fullModelName || !fullModelName.trim()) {
-    return '';
-  }
-
-  const trimmed = fullModelName.trim();
-  
-  // Common manufacturer prefixes to remove
-  const manufacturerPrefixes = [
-    'Advidia',
-    'Panasonic',
-    'i-PRO',
-    'Panasonic / i-PRO',
-    'Panasonic/i-PRO',
-    'Axis Communications',
-    'Axis',
-    'Hanwa',
-    'Hikvision',
-    'ACTi',
-    'Ubiquity',
-    'Alibi'
-  ];
-
-  // Try to remove manufacturer prefixes
-  for (const prefix of manufacturerPrefixes) {
-    const prefixPattern = new RegExp(`^${prefix.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*[\\/-]?\\s*`, 'i');
-    if (prefixPattern.test(trimmed)) {
-      const extracted = trimmed.replace(prefixPattern, '').trim();
-      if (extracted.length > 0) {
-        return extracted;
-      }
-    }
-  }
-
-  // If no manufacturer prefix found, return the original string
-  return trimmed;
-};
-
-/**
- * Finds matching third-party camera by model name or aliases with improved matching
- * @param modelName Camera model name to search for (may include manufacturer)
+ * Finds matching third-party camera by cleaned model name with improved matching
+ * @param cleanedModelName Cleaned camera model name (without manufacturer prefix and noise)
  * @param thirdPartyCameras Array of third-party cameras to search in
  * @returns Matching camera object or undefined if not found
  */
 export const findThirdPartyMatch = (
-  modelName: string,
+  cleanedModelName: string,
   thirdPartyCameras: ThirdPartyCamera[]
 ): ThirdPartyCamera | undefined => {
-  if (!modelName || !modelName.trim()) {
+  if (!cleanedModelName || !cleanedModelName.trim()) {
     return undefined;
   }
 
-  // Extract the model name without manufacturer prefix
-  const extractedModel = extractModelName(modelName);
-  const searchModel = extractedModel.toLowerCase().trim();
-  
-  // Also try the original model name in case extraction failed
-  const originalModel = modelName.toLowerCase().trim();
+  const searchModel = cleanedModelName.toLowerCase().trim();
 
   return thirdPartyCameras.find(camera => {
     const dbModel = camera.model.toLowerCase().trim();
     
-    // Check exact model match with extracted name
+    // Check exact model match
     if (dbModel === searchModel) {
       return true;
     }
     
-    // Check exact model match with original name
-    if (dbModel === originalModel) {
-      return true;
-    }
-    
     // Check if the database model is contained in the search model
-    if (searchModel.includes(dbModel) || originalModel.includes(dbModel)) {
+    if (searchModel.includes(dbModel)) {
       return true;
     }
     
     // Check if the search model is contained in the database model
-    if (dbModel.includes(searchModel) || dbModel.includes(originalModel)) {
+    if (dbModel.includes(searchModel)) {
       return true;
     }
 
-    // Check aliases with both extracted and original model names
+    // Check aliases
     if (camera.aliases && camera.aliases.length > 0) {
       return camera.aliases.some(alias => {
         const aliasLower = alias.toLowerCase().trim();
-        return aliasLower === searchModel || 
-               aliasLower === originalModel ||
+        return aliasLower === searchModel ||
                searchModel.includes(aliasLower) ||
-               originalModel.includes(aliasLower) ||
-               aliasLower.includes(searchModel) ||
-               aliasLower.includes(originalModel);
+               aliasLower.includes(searchModel);
       });
     }
 
