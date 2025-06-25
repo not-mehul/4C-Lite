@@ -60,6 +60,7 @@ This is the final step, where you can see the full compatibility report.
 > [!TIP]
 > **Contribute to the Database\!**
 > If you edit a camera's details to add or correct its Resolution (MP) and Channel Count, an "Export Modified" button will appear. You can use this to export the updated information as a YAML file. Please consider sharing this file with us so it can be added to the database, improving the tool for everyone\!
+> ![4C-Lite-Preview](./images/4CL-3-d.png)
 
 ## Understanding the Match Types
 
