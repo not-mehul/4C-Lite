@@ -112,4 +112,4 @@ A: The details for 'Observed' cameras come from a database curated with input fr
 
 -----
 
-*Version: 1.0.1*
+*Version: 1.5*
