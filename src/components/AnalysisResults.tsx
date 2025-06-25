@@ -520,7 +520,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
             <li>
               For Usage Instructions review:{' '}
               <a 
-                href="https://github.com/not-mehul/4C-Lite/blob/gh-pages/README.md" 
+                href="https://github.com/not-mehul/4C-Lite/blob/main/README.md" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="text-blue-700 dark:text-blue-300 hover:text-blue-800 dark:hover:text-blue-200 underline hover:no-underline transition-colors duration-200"
