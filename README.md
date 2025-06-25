@@ -51,8 +51,8 @@ This is the final step, where you can see the full compatibility report.
 
 ![4C-Lite Web Application Results](./images/4CL-3.jpeg)
 
-[!TIP]
-If you encounter cameras that are not marked as 'Observed' or have incorrect information, when you edit these cameras with the appropriate Resolution(MP) and Channel count, you will see a 'Export Modified' button on the top, you can export the modified configuration as a YAML and share it with me and I can have it added to the gold standard configuration database.
+> [!TIP]
+> If you encounter cameras that are not marked as 'Observed' or have incorrect information, when you edit these cameras with the appropriate Resolution(MP) and Channel count, you will see a 'Export Modified' button on the top, you can export the modified configuration as a YAML and share it with me and I can have it added to the gold standard configuration database.
 ![4C-Lite Web Application Results](./images/4CL-4.jpeg)
 
 ## Understanding the Match Types
