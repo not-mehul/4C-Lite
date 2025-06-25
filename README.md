@@ -100,6 +100,9 @@ A: **Exact** matches are 100% accurate based on the Verkada list. **Potential** 
 **Q: Can I use this tool offline?**
 A: The application requires an internet connection to load initially. However, all file processing happens in your browser, so you can perform the analysis without a persistent connection after the page has loaded.
 
+**Q: How accurate are the Observed camera details?**
+A: The Observed camera details are details that have been curated by us with the input of other engineers, we hope to ensure they are as accurate as possible however, this information could be incorrect or changed. We are unable to automatically calculate this information given the large amounts of variation in camera models/databases therefore these are values that have been manually identified.
+
 -----
 
 *Version: 1.0.1*
