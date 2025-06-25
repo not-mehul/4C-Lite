@@ -8,11 +8,9 @@ By simply uploading a file with your camera models, this application automates t
 
 **This is a web-based tool. No installation or setup is required.**
 
-\<br\>
-
 -----
 
-*\<p align="center"\>[Screenshot Placeholder: A wide shot of the main application interface, perhaps showing the three-step process.]\</p\>*
+![4C-Lite Web Application](./images/4CL-1.jpeg)
 
 -----
 
@@ -28,12 +26,6 @@ First, you'll need a file containing a list of your camera models.
 2.  Drag and drop your camera inventory file into the designated area, or click the box to browse for the file on your computer.
 3.  The application supports several common formats: **CSV**, **Excel** (`.xlsx`, `.xls`), **OpenDocument** (`.ods`), and **Apple Numbers** (`.numbers`).
 4.  Once uploaded, the tool will automatically validate and parse your file to proceed to the next step.
-
------
-
-*\<p align="center"\>[Screenshot Placeholder: The file upload interface with the drag-and-drop area highlighted.]\</p\>*
-
------
 
 ### Step 2: Preview Your Data & Select Columns
 
