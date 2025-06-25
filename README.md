@@ -63,8 +63,8 @@ The analysis results are categorized to give you a clear understanding of your i
 | :--: | :--- | :--- |
 | 🟢 | **Exact** | A direct, 100% match was found in the Verkada Hardware Compatibility List. |
 | 🟡 | **Potential** | A close, similarity-based match was found. This requires your review and approval (or denial) to confirm. |
-| 🔵 | **Identified** | A "Potential" match that you have manually approved. |
-| 🟠 | **Declined** | A "Potential" match that you have manually declined. |
+| 🔵 | **Identified** | A "Potential" match that you have manually approved. The properties of the similar camera are inherited |
+| 🟠 | **Declined** | A "Potential" match that you have manually declined. Any properties from the similar camera are removed and it is treated as a 'None'. |
 | 🟣 | **Modified** | You have manually edited the details for this camera entry. |
 | 🔴 | **None** | No compatible model was found in the Verkada list. |
 | 👁️ | **Observed** | An "Observed" tag indicates that the camera's specifications (like resolution or protocol type) have been enhanced using an additional third-party database for more detailed information. |
