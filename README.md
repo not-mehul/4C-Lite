@@ -41,7 +41,7 @@ This is the final step, where you can see the full compatibility report.
 4.  **Edit Camera Information:** You can click the "Edit" (pencil) icon on any camera to manually modify its details, such as the integration type, resolution, or channel count. This is particularly useful for cameras that were not automatically identified or for correcting information.
 5.  **Export Your Report:** Once you're finished, you can download your results.
 
-> ![TIP]
+> [!TIP]
 > **Contribute to the Database\!**
 > If you edit a camera's details to add or correct its Resolution (MP) and Channel Count, an "Export Modified" button will appear. You can use this to export the updated information as a YAML file. Please consider sharing this file with us so it can be added to the database, improving the tool for everyone\!
 
