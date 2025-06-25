@@ -39,12 +39,6 @@ Next, you'll see a preview of your data. Here, you need to tell the application 
 
 ![4C-Lite Web Application-Preview](./images/4CL-2.jpeg)
 
------
-
-*\<p align="center"\>[Screenshot Placeholder: The data preview table, showing one column selected as "Model" (in green) and another as "Count" (in blue).]\</p\>*
-
------
-
 ### Step 3: Review and Manage Your Results
 
 This is the final step, where you can see the full compatibility report.
