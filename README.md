@@ -76,23 +76,17 @@ The analysis results are categorized to give you a clear understanding of your i
   * **Third-Party Enhancement:** Unmatched cameras are cross-referenced against a separate database of known third-party cameras to provide additional details, helping you better identify and manage them.
   * **Interactive Editing:** You have full control to review and modify the results. You can approve or decline potential matches and edit camera details directly in the results table.
 
------
-
-*\<p align="center"\>[Screenshot Placeholder: The camera editing form, showing the fields a user can modify.]\</p\>*
-
------
-
 ## Exporting Your Results
 
 You have two options for exporting your data:
 
 1.  **Download Compatibility Report (CSV):** This downloads a complete report of your analysis in a CSV file. It includes the original model name, the matched model, match type, compatibility details, and any notes.
-2.  **Export Modified (YAML):** This option becomes available only after you have modified at least one camera entry. It exports a `YAML` file containing *only the cameras you have edited*. This file is formatted for easy integration with other database systems.
+2.  **Export Modified (YAML):** This option becomes available only after you have modified at least one camera entry. It exports a `YAML` file containing *only the cameras you have edited*. This file is formatted for easy integration with our database systems.
 
 ## Frequently Asked Questions
 
 **Q: Is my data secure?**
-A: Yes. All file processing and data analysis happen **locally in your web browser**. Your data is never uploaded to an external server, ensuring your privacy and security.
+A: Yes. All file processing and data analysis happens **locally on your web browser**. Your data is never uploaded to an external server, ensuring your privacy and security. 
 
 **Q: What file formats are supported?**
 A: You can upload files in CSV, Excel (`.xlsx`, `.xls`), OpenDocument (`.ods`), and Apple Numbers (`.numbers`) formats. The file size limit is 25MB.
@@ -108,4 +102,4 @@ A: The application requires an internet connection to load initially. However, a
 
 -----
 
-*Version: 1.0.0*
+*Version: 1.0.1*
