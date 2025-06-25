@@ -1,10 +1,13 @@
-export interface VerkadaModel {
-  manufacturer: string;
-  modelName: string;
-  minimumFirmware: string;
-  notes: string;
-}
+/**
+ * Verkada compatibility data loader and parser
+ */
 
+import { VerkadaModel } from '../types';
+
+/**
+ * Loads and parses Verkada compatibility models from CSV file
+ * @returns Promise resolving to array of Verkada model objects
+ */
 export const loadVerkadaModels = async (): Promise<VerkadaModel[]> => {
   try {
     const response = await fetch('Verkada Command Connector Compatibility.csv');
@@ -17,6 +20,7 @@ export const loadVerkadaModels = async (): Promise<VerkadaModel[]> => {
     const csvText = await response.text();
     const models = parseVerkadaCSV(csvText);
 
+    // Filter out models without valid model names
     return models.filter(
       (model) => model.modelName && model.modelName.trim() !== ''
     );
@@ -27,6 +31,11 @@ export const loadVerkadaModels = async (): Promise<VerkadaModel[]> => {
   }
 };
 
+/**
+ * Parses Verkada CSV content into structured model objects
+ * @param csvText Raw CSV text content
+ * @returns Array of parsed Verkada model objects
+ */
 const parseVerkadaCSV = (csvText: string): VerkadaModel[] => {
   const lines = csvText.split('\n').filter((line) => line.trim());
 
@@ -34,7 +43,7 @@ const parseVerkadaCSV = (csvText: string): VerkadaModel[] => {
     throw new Error('CSV file is empty');
   }
 
-  // Skip header lines until we find the actual data header
+  // Find the header row containing required columns
   let headerIndex = -1;
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i].toLowerCase();
@@ -49,20 +58,9 @@ const parseVerkadaCSV = (csvText: string): VerkadaModel[] => {
   }
 
   const headers = parseCSVLine(lines[headerIndex]);
-  const manufacturerIndex = headers.findIndex((h) =>
-    h.toLowerCase().includes('manufacturer')
-  );
-  const modelNameIndex = headers.findIndex((h) =>
-    h.toLowerCase().includes('model name')
-  );
-  const firmwareIndex = headers.findIndex((h) =>
-    h.toLowerCase().includes('firmware')
-  );
-  const notesIndex = headers.findIndex((h) =>
-    h.toLowerCase().includes('notes')
-  );
+  const columnIndices = getColumnIndices(headers);
 
-  if (manufacturerIndex === -1 || modelNameIndex === -1) {
+  if (columnIndices.manufacturerIndex === -1 || columnIndices.modelNameIndex === -1) {
     throw new Error(
       'Required columns (Manufacturer, Model Name) not found in CSV'
     );
@@ -74,11 +72,11 @@ const parseVerkadaCSV = (csvText: string): VerkadaModel[] => {
   for (let i = headerIndex + 1; i < lines.length; i++) {
     const row = parseCSVLine(lines[i]);
 
-    if (row.length > Math.max(manufacturerIndex, modelNameIndex)) {
-      const manufacturer = row[manufacturerIndex]?.trim() || '';
-      const modelName = row[modelNameIndex]?.trim() || '';
-      const minimumFirmware = row[firmwareIndex]?.trim() || '';
-      const notes = row[notesIndex]?.trim() || '';
+    if (row.length > Math.max(columnIndices.manufacturerIndex, columnIndices.modelNameIndex)) {
+      const manufacturer = row[columnIndices.manufacturerIndex]?.trim() || '';
+      const modelName = row[columnIndices.modelNameIndex]?.trim() || '';
+      const minimumFirmware = row[columnIndices.firmwareIndex]?.trim() || '';
+      const notes = row[columnIndices.notesIndex]?.trim() || '';
 
       // Only include rows with valid manufacturer and model name
       if (manufacturer && modelName) {
@@ -95,6 +93,33 @@ const parseVerkadaCSV = (csvText: string): VerkadaModel[] => {
   return models;
 };
 
+/**
+ * Finds column indices for required fields in CSV headers
+ * @param headers Array of header strings
+ * @returns Object containing column indices
+ */
+const getColumnIndices = (headers: string[]) => {
+  return {
+    manufacturerIndex: headers.findIndex((h) =>
+      h.toLowerCase().includes('manufacturer')
+    ),
+    modelNameIndex: headers.findIndex((h) =>
+      h.toLowerCase().includes('model name')
+    ),
+    firmwareIndex: headers.findIndex((h) =>
+      h.toLowerCase().includes('firmware')
+    ),
+    notesIndex: headers.findIndex((h) =>
+      h.toLowerCase().includes('notes')
+    ),
+  };
+};
+
+/**
+ * Parses a single CSV line handling quoted values and commas
+ * @param line CSV line to parse
+ * @returns Array of parsed cell values
+ */
 const parseCSVLine = (line: string): string[] => {
   const result: string[] = [];
   let current = '';

@@ -1,27 +1,16 @@
-// Common English dictionary words to filter out
-const COMMON_WORDS = new Set([
-  'the', 'and', 'for', 'are', 'but', 'not', 'you', 'all', 'can', 'had', 'her', 'was', 'one', 'our', 'out', 'day', 'get', 'has', 'him', 'his', 'how', 'man', 'new', 'now', 'old', 'see', 'two', 'way', 'who', 'boy', 'did', 'its', 'let', 'put', 'say', 'she', 'too', 'use',
-  'camera', 'security', 'surveillance', 'system', 'device', 'equipment', 'network', 'wireless', 'indoor', 'outdoor', 'dome', 'bullet', 'ptz', 'fixed', 'varifocal', 'lens', 'megapixel', 'resolution', 'night', 'vision', 'infrared', 'audio', 'video', 'digital', 'analog', 'hybrid', 'nvr', 'dvr', 'recorder', 'channel', 'port', 'power', 'supply', 'adapter', 'cable', 'mount', 'bracket', 'housing', 'enclosure'
-]);
+/**
+ * Data cleaning utilities for processing camera model information
+ */
 
-// Regex patterns for filtering
-const IP_ADDRESS_PATTERN = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
-const IPV6_PATTERN = /^(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$|^::1$|^::$/;
-const MAC_ADDRESS_PATTERN = /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$|^([0-9A-Fa-f]{4}\.){2}[0-9A-Fa-f]{4}$/;
-const DATE_PATTERNS = [
-  /^\d{1,2}\/\d{1,2}\/\d{2,4}$/, // MM/DD/YYYY or M/D/YY
-  /^\d{1,2}-\d{1,2}-\d{2,4}$/, // MM-DD-YYYY or M-D-YY
-  /^\d{4}-\d{1,2}-\d{1,2}$/, // YYYY-MM-DD
-  /^\d{1,2}\.\d{1,2}\.\d{2,4}$/, // MM.DD.YYYY
-  /^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{1,2},?\s+\d{2,4}$/i, // Month DD, YYYY
-];
+import { COMMON_WORDS, REGEX_PATTERNS } from './constants';
+import { CleaningResult, VerkadaModel } from '../types';
 
-export interface CleaningResult {
-  original: string;
-  cleaned: string;
-  removedElements: string[];
-}
-
+/**
+ * Cleans and preprocesses camera model data by removing common noise
+ * @param input Raw model string to clean
+ * @param manufacturerNames Array of known manufacturer names to filter out
+ * @returns Cleaning result with original, cleaned string, and removed elements
+ */
 export const cleanModelData = (input: string, manufacturerNames: string[]): CleaningResult => {
   if (!input || typeof input !== 'string') {
     return {
@@ -44,19 +33,19 @@ export const cleanModelData = (input: string, manufacturerNames: string[]): Clea
     if (!trimmedToken) return false;
     
     // Check for IP addresses
-    if (IP_ADDRESS_PATTERN.test(trimmedToken) || IPV6_PATTERN.test(trimmedToken)) {
+    if (REGEX_PATTERNS.IP_ADDRESS.test(trimmedToken) || REGEX_PATTERNS.IPV6.test(trimmedToken)) {
       removedElements.push(`IP: ${trimmedToken}`);
       return false;
     }
     
     // Check for MAC addresses
-    if (MAC_ADDRESS_PATTERN.test(trimmedToken)) {
+    if (REGEX_PATTERNS.MAC_ADDRESS.test(trimmedToken)) {
       removedElements.push(`MAC: ${trimmedToken}`);
       return false;
     }
     
     // Check for date patterns
-    if (DATE_PATTERNS.some(pattern => pattern.test(trimmedToken))) {
+    if (REGEX_PATTERNS.DATE_PATTERNS.some(pattern => pattern.test(trimmedToken))) {
       removedElements.push(`Date: ${trimmedToken}`);
       return false;
     }
@@ -104,7 +93,12 @@ export const cleanModelData = (input: string, manufacturerNames: string[]): Clea
   };
 };
 
-export const extractManufacturerNames = (verkadaModels: Array<{manufacturer: string}>): string[] => {
+/**
+ * Extracts unique manufacturer names from Verkada models for filtering
+ * @param verkadaModels Array of Verkada model objects
+ * @returns Array of unique manufacturer names and their variations
+ */
+export const extractManufacturerNames = (verkadaModels: VerkadaModel[]): string[] => {
   const manufacturers = new Set<string>();
   
   verkadaModels.forEach(model => {
@@ -112,7 +106,7 @@ export const extractManufacturerNames = (verkadaModels: Array<{manufacturer: str
       const manufacturer = model.manufacturer.trim();
       manufacturers.add(manufacturer);
       
-      // Also add common variations
+      // Also add common variations (individual words)
       const words = manufacturer.split(/\s+/);
       words.forEach(word => {
         if (word.length > 2) {
@@ -125,6 +119,12 @@ export const extractManufacturerNames = (verkadaModels: Array<{manufacturer: str
   return Array.from(manufacturers);
 };
 
+/**
+ * Preprocesses a model string for matching by cleaning it
+ * @param model Model string to preprocess
+ * @param manufacturerNames Array of manufacturer names to filter out
+ * @returns Cleaned model string ready for matching
+ */
 export const preprocessModelForMatching = (model: string, manufacturerNames: string[]): string => {
   const cleaningResult = cleanModelData(model, manufacturerNames);
   return cleaningResult.cleaned;

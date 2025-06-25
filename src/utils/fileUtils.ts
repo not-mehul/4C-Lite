@@ -1,30 +1,26 @@
+/**
+ * File handling utilities for parsing various file formats
+ */
+
 import * as XLSX from 'xlsx';
+import { SUPPORTED_FILE_TYPES, SUPPORTED_FILE_EXTENSIONS, MAX_FILE_SIZE } from './constants';
+import { CSVData } from '../types';
 
-export interface FileData {
-  headers: string[];
-  rows: string[][];
-}
-
+/**
+ * Validates uploaded file type and size
+ * @param file File object to validate
+ * @returns Error message if invalid, null if valid
+ */
 export const validateFile = (file: File): string | null => {
-  const allowedTypes = [
-    'text/csv',
-    'application/vnd.ms-excel',
-    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    'application/vnd.oasis.opendocument.spreadsheet',
-    'application/vnd.apple.numbers'
-  ];
-  
-  const allowedExtensions = ['.csv', '.xlsx', '.xls', '.ods', '.numbers'];
-  
-  const hasValidType = allowedTypes.some(type => file.type.includes(type)) || 
+  const hasValidType = SUPPORTED_FILE_TYPES.some(type => file.type.includes(type)) || 
                       file.type === '' || // Some browsers don't set MIME type
-                      allowedExtensions.some(ext => file.name.toLowerCase().endsWith(ext));
+                      SUPPORTED_FILE_EXTENSIONS.some(ext => file.name.toLowerCase().endsWith(ext));
   
   if (!hasValidType) {
     return 'Please upload a CSV, Excel (.xlsx, .xls), OpenDocument (.ods), or Numbers (.numbers) file only.';
   }
   
-  if (file.size > 25 * 1024 * 1024) {
+  if (file.size > MAX_FILE_SIZE) {
     return 'File size must be less than 25MB.';
   }
   
@@ -35,40 +31,79 @@ export const validateFile = (file: File): string | null => {
   return null;
 };
 
-export const parseFile = async (file: File): Promise<FileData> => {
+/**
+ * Parses uploaded file based on its format
+ * @param file File object to parse
+ * @returns Promise resolving to parsed file data
+ */
+export const parseFile = async (file: File): Promise<CSVData> => {
   const fileName = file.name.toLowerCase();
   
   if (fileName.endsWith('.csv')) {
     return parseCSV(await file.text());
-  } else if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls') || fileName.endsWith('.ods') || fileName.endsWith('.numbers')) {
+  } else if (SUPPORTED_FILE_EXTENSIONS.slice(1).some(ext => fileName.endsWith(ext))) {
     return parseExcel(file);
   } else {
     throw new Error('Unsupported file format');
   }
 };
 
-const parseCSV = (text: string): FileData => {
+/**
+ * Parses CSV text content
+ * @param text CSV text content
+ * @returns Parsed CSV data structure
+ */
+const parseCSV = (text: string): CSVData => {
   const lines = text.split('\n').filter(line => line.trim());
   if (lines.length === 0) {
     throw new Error('CSV file is empty');
   }
 
-  const headers = lines[0].split(',').map(header => header.trim().replace(/^"|"$/g, ''));
-  const rows = lines.slice(1).map(line => 
-    line.split(',').map(cell => cell.trim().replace(/^"|"$/g, ''))
-  );
+  const headers = parseCSVLine(lines[0]);
+  const rows = lines.slice(1)
+    .map(line => parseCSVLine(line))
+    .filter(row => row.some(cell => cell.length > 0));
 
   if (headers.length === 0) {
     throw new Error('No headers found in CSV file');
   }
 
-  return { 
-    headers, 
-    rows: rows.filter(row => row.some(cell => cell.length > 0)) 
-  };
+  return { headers, rows };
 };
 
-const parseExcel = async (file: File): Promise<FileData> => {
+/**
+ * Parses a single CSV line handling quoted values
+ * @param line CSV line to parse
+ * @returns Array of cell values
+ */
+const parseCSVLine = (line: string): string[] => {
+  const result: string[] = [];
+  let current = '';
+  let inQuotes = false;
+
+  for (let i = 0; i < line.length; i++) {
+    const char = line[i];
+
+    if (char === '"') {
+      inQuotes = !inQuotes;
+    } else if (char === ',' && !inQuotes) {
+      result.push(current.trim());
+      current = '';
+    } else {
+      current += char;
+    }
+  }
+
+  result.push(current.trim());
+  return result.map(cell => cell.replace(/^"|"$/g, ''));
+};
+
+/**
+ * Parses Excel/spreadsheet files using XLSX library
+ * @param file File object to parse
+ * @returns Promise resolving to parsed file data
+ */
+const parseExcel = async (file: File): Promise<CSVData> => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     
@@ -117,10 +152,16 @@ const parseExcel = async (file: File): Promise<FileData> => {
   });
 };
 
+/**
+ * Returns array of supported file extensions
+ */
 export const getSupportedFileTypes = (): string[] => {
-  return ['.csv', '.xlsx', '.xls', '.ods', '.numbers'];
+  return [...SUPPORTED_FILE_EXTENSIONS];
 };
 
+/**
+ * Returns human-readable description of supported file types
+ */
 export const getFileTypeDescription = (): string => {
   return 'CSV, Excel, OpenDocument, or Numbers files';
 };

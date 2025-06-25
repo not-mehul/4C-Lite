@@ -3,7 +3,6 @@ import {
   BarChart,
   Download,
   RotateCcw,
-  TrendingUp,
   Search,
   CheckCircle,
   AlertTriangle,
@@ -14,37 +13,24 @@ import {
   Info,
   Calendar,
   Database,
+  Edit,
+  Save,
+  Eye,
+  FileDown,
 } from 'lucide-react';
-import { CSVData, ColumnSelection, AnalysisResult } from '../types';
-import { VerkadaModel } from '../utils/verkadaLoader';
-import {
-  preprocessModelForMatching,
-  extractManufacturerNames,
-  cleanModelData,
-} from '../utils/dataCleaningUtils';
+import { CSVData, ColumnSelection, VerkadaModel, ModelMatch, VerkadaFileInfo, CompatibilityType, CameraDetails, MatchType, ThirdPartyCamera } from '../types';
+import { extractManufacturerNames } from '../utils/dataCleaningUtils';
+import { processModelMatches, createDefaultCameraDetails, processPotentialMatchApproval, processPotentialMatchDecline } from '../utils/matchingUtils';
+import { loadThirdPartyCameras } from '../utils/thirdPartyLoader';
+import { getModifiedCameraEntries, generateYAMLExport, downloadYAMLFile, validateYAMLExportData } from '../utils/yamlExportUtils';
+import { CameraEditForm } from './CameraEditForm';
+import { MatchActionButtons } from './MatchActionButtons';
 
 interface AnalysisResultsProps {
   data: CSVData;
   selection: ColumnSelection;
   verkadaModels: VerkadaModel[];
   onStartOver: () => void;
-}
-
-interface ModelMatch {
-  model: string;
-  cleanedModel: string;
-  count: number;
-  matchType: 'exact' | 'potential' | 'none';
-  matchedWith?: string;
-  similarity?: number;
-  removedElements?: string[];
-  verkadaDetails?: VerkadaModel;
-  compatibilityType?: 'RTSP' | 'ONVIF-S';
-}
-
-interface VerkadaFileInfo {
-  totalModels: number;
-  lastModified: string;
 }
 
 export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
@@ -54,8 +40,34 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
   onStartOver,
 }) => {
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
-  const [verkadaFileInfo, setVerkadaFileInfo] =
-    useState<VerkadaFileInfo | null>(null);
+  const [verkadaFileInfo, setVerkadaFileInfo] = useState<VerkadaFileInfo | null>(null);
+  const [modelMatches, setModelMatches] = useState<ModelMatch[]>([]);
+  const [thirdPartyCameras, setThirdPartyCameras] = useState<ThirdPartyCamera[]>([]);
+  const [isLoadingThirdParty, setIsLoadingThirdParty] = useState(true);
+  const [yamlExportError, setYamlExportError] = useState<string | null>(null);
+
+  // Load third-party camera database
+  useEffect(() => {
+    const loadThirdPartyData = async () => {
+      try {
+        setIsLoadingThirdParty(true);
+        const cameras = await loadThirdPartyCameras();
+        setThirdPartyCameras(cameras);
+        
+        if (cameras.length === 0) {
+          console.warn('No third-party cameras loaded - no enhancement will occur');
+        } else {
+          console.log(`Successfully loaded ${cameras.length} third-party cameras`);
+        }
+      } catch (error) {
+        console.error('Failed to load third-party cameras:', error);
+      } finally {
+        setIsLoadingThirdParty(false);
+      }
+    };
+
+    loadThirdPartyData();
+  }, []);
 
   // Load Verkada file information
   useEffect(() => {
@@ -96,6 +108,9 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
     }
   }, [verkadaModels]);
 
+  /**
+   * Toggles the expansion state of a table row
+   */
   const toggleRowExpansion = (modelKey: string) => {
     const newExpanded = new Set(expandedRows);
     if (newExpanded.has(modelKey)) {
@@ -106,142 +121,16 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
     setExpandedRows(newExpanded);
   };
 
-  // Function to determine compatibility type based on notes
-  const getCompatibilityType = (verkadaModel?: VerkadaModel): 'RTSP' | 'ONVIF-S' => {
-    if (!verkadaModel || !verkadaModel.notes) {
-      return 'ONVIF-S';
-    }
-    
-    const notes = verkadaModel.notes.toLowerCase();
-    return notes.includes('rtsp support only') ? 'RTSP' : 'ONVIF-S';
-  };
-
-  // Function to calculate string similarity
-  const calculateSimilarity = (str1: string, str2: string): number => {
-    const longer = str1.length > str2.length ? str1 : str2;
-    const shorter = str1.length > str2.length ? str2 : str1;
-
-    if (longer.length === 0) return 1.0;
-
-    const editDistance = levenshteinDistance(
-      longer.toLowerCase(),
-      shorter.toLowerCase()
-    );
-    return (longer.length - editDistance) / longer.length;
-  };
-
-  // Levenshtein distance calculation
-  const levenshteinDistance = (str1: string, str2: string): number => {
-    const matrix = [];
-
-    for (let i = 0; i <= str2.length; i++) {
-      matrix[i] = [i];
-    }
-
-    for (let j = 0; j <= str1.length; j++) {
-      matrix[0][j] = j;
-    }
-
-    for (let i = 1; i <= str2.length; i++) {
-      for (let j = 1; j <= str1.length; j++) {
-        if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
-          matrix[i][j] = matrix[i - 1][j - 1];
-        } else {
-          matrix[i][j] = Math.min(
-            matrix[i - 1][j - 1] + 1,
-            matrix[i][j - 1] + 1,
-            matrix[i - 1][j] + 1
-          );
-        }
-      }
-    }
-
-    return matrix[str2.length][str1.length];
-  };
-
-  // Function to find best match for a model
-  const findBestMatch = (
-    cleanedModel: string,
-    manufacturerNames: string[]
-  ): {
-    matchType: 'exact' | 'potential' | 'none';
-    matchedWith?: string;
-    similarity?: number;
-    verkadaDetails?: VerkadaModel;
-    compatibilityType?: 'RTSP' | 'ONVIF-S';
-  } => {
-    if (!cleanedModel || cleanedModel.trim() === '') {
-      return { matchType: 'none' };
-    }
-
-    const modelLower = cleanedModel.toLowerCase().trim();
-
-    // Check for exact match with cleaned Verkada models
-    for (const verkadaModel of verkadaModels) {
-      const cleanedVerkadaModel = preprocessModelForMatching(
-        verkadaModel.modelName,
-        manufacturerNames
-      );
-      if (cleanedVerkadaModel.toLowerCase() === modelLower) {
-        return {
-          matchType: 'exact',
-          matchedWith: verkadaModel.modelName,
-          similarity: 1.0,
-          verkadaDetails: verkadaModel,
-          compatibilityType: getCompatibilityType(verkadaModel),
-        };
-      }
-    }
-
-    // Check for potential matches
-    let bestMatch = '';
-    let bestSimilarity = 0;
-    let bestOriginalModel = '';
-    let bestVerkadaModel: VerkadaModel | undefined;
-
-    for (const verkadaModel of verkadaModels) {
-      const cleanedVerkadaModel = preprocessModelForMatching(
-        verkadaModel.modelName,
-        manufacturerNames
-      );
-      const similarity = calculateSimilarity(
-        modelLower,
-        cleanedVerkadaModel.toLowerCase()
-      );
-
-      // Check if one is a subset of the other
-      const isSubset =
-        modelLower.includes(cleanedVerkadaModel.toLowerCase()) ||
-        cleanedVerkadaModel.toLowerCase().includes(modelLower);
-
-      if (similarity > bestSimilarity || (isSubset && similarity > 0.5)) {
-        bestSimilarity = similarity;
-        bestMatch = cleanedVerkadaModel;
-        bestOriginalModel = verkadaModel.modelName;
-        bestVerkadaModel = verkadaModel;
-      }
-    }
-
-    // Consider it a potential match if similarity > 0.6 or if there's a significant substring match
-    if (bestSimilarity > 0.6) {
-      return {
-        matchType: 'potential',
-        matchedWith: bestOriginalModel,
-        similarity: bestSimilarity,
-        verkadaDetails: bestVerkadaModel,
-        compatibilityType: getCompatibilityType(bestVerkadaModel),
-      };
-    }
-
-    return { matchType: 'none' };
-  };
-
+  /**
+   * Processes the uploaded data and performs compatibility analysis
+   */
   const results = useMemo(() => {
     const modelColumnIndex = data.headers.indexOf(selection.modelColumn!);
     const countColumnIndex = selection.countColumn
       ? data.headers.indexOf(selection.countColumn)
       : -1;
 
+    // Aggregate data by model
     const aggregatedData = new Map<string, number>();
 
     data.rows.forEach((row) => {
@@ -262,60 +151,189 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
     // Extract manufacturer names for cleaning
     const manufacturerNames = extractManufacturerNames(verkadaModels);
 
-    return Array.from(aggregatedData.entries())
-      .map(([model, count]) => {
-        const cleaningResult = cleanModelData(model, manufacturerNames);
-        const cleanedModel = cleaningResult.cleaned;
-        const matchInfo = findBestMatch(cleanedModel, manufacturerNames);
+    // Process matches using utility function with third-party enhancement
+    const processedMatches = processModelMatches(
+      aggregatedData, 
+      manufacturerNames, 
+      verkadaModels,
+      thirdPartyCameras
+    );
+    setModelMatches(processedMatches);
+    return processedMatches;
+  }, [data, selection, verkadaModels, thirdPartyCameras]);
 
-        return {
-          model,
-          cleanedModel,
-          count,
-          matchType: matchInfo.matchType,
-          matchedWith: matchInfo.matchedWith,
-          similarity: matchInfo.similarity,
-          removedElements: cleaningResult.removedElements,
-          verkadaDetails: matchInfo.verkadaDetails,
-          compatibilityType: matchInfo.compatibilityType,
-        } as ModelMatch;
-      })
-      .sort((a, b) => b.count - a.count);
-  }, [data, selection, verkadaModels]);
+  /**
+   * Handles approval of a potential match with enhanced third-party processing
+   */
+  const handleApproveMatch = (matchId: string) => {
+    setModelMatches(prev => prev.map(match => {
+      if (match.id === matchId) {
+        return processPotentialMatchApproval(match, thirdPartyCameras);
+      }
+      return match;
+    }));
+  };
 
-  const totalCount = results.reduce((sum, result) => sum + result.count, 0);
-  const maxCount = Math.max(...results.map((r) => r.count));
+  /**
+   * Handles decline of a potential match with enhanced third-party processing
+   */
+  const handleDeclineMatch = (matchId: string) => {
+    setModelMatches(prev => prev.map(match => {
+      if (match.id === matchId) {
+        return processPotentialMatchDecline(match, thirdPartyCameras);
+      }
+      return match;
+    }));
+  };
 
-  // Statistics for match types
-  const exactMatches = results.filter((r) => r.matchType === 'exact');
-  const potentialMatches = results.filter((r) => r.matchType === 'potential');
-  const noMatches = results.filter((r) => r.matchType === 'none');
+  /**
+   * Starts editing mode for a camera
+   */
+  const handleStartEdit = (matchId: string) => {
+    setModelMatches(prev => prev.map(match => 
+      match.id === matchId 
+        ? { ...match, isEditing: true }
+        : match
+    ));
+  };
 
-  // Calculate device counts for each match type
+  /**
+   * Saves edited camera details and updates match type to "modified"
+   */
+  const handleSaveEdit = (matchId: string, details: CameraDetails) => {
+    setModelMatches(prev => prev.map(match => 
+      match.id === matchId 
+        ? { 
+            ...match, 
+            editedDetails: details, 
+            isEditing: false,
+            matchType: 'modified' as MatchType,
+            compatibilityType: details.integrationType
+          }
+        : match
+    ));
+  };
+
+  /**
+   * Cancels editing mode
+   */
+  const handleCancelEdit = (matchId: string) => {
+    setModelMatches(prev => prev.map(match => 
+      match.id === matchId 
+        ? { ...match, isEditing: false }
+        : match
+    ));
+  };
+
+  /**
+   * Checks if editing is allowed for a match type
+   */
+  const isEditingAllowed = (matchType: MatchType): boolean => {
+    return matchType !== 'potential';
+  };
+
+  /**
+   * Checks if details expansion is allowed for a match
+   */
+  const isDetailsExpansionAllowed = (match: ModelMatch): boolean => {
+    // Allow expansion if:
+    // 1. Has Verkada details (exact, potential, identified matches)
+    // 2. Is a 'none' match that has been enhanced with third-party data
+    // 3. Has been modified (has editedDetails)
+    return !!(
+      match.verkadaDetails || 
+      (match.matchType === 'none' && match.thirdPartyEnhanced) ||
+      match.editedDetails
+    );
+  };
+
+  /**
+   * Handles YAML export of modified camera entries
+   */
+  const handleYAMLExport = () => {
+    try {
+      setYamlExportError(null);
+      
+      const modifiedEntries = getModifiedCameraEntries(modelMatches);
+      const validation = validateYAMLExportData(modifiedEntries);
+      
+      if (!validation.isValid) {
+        setYamlExportError(`Export validation failed: ${validation.errors.join(', ')}`);
+        return;
+      }
+      
+      if (validation.warnings.length > 0) {
+        console.warn('YAML Export warnings:', validation.warnings);
+      }
+      
+      const yamlContent = generateYAMLExport(modifiedEntries);
+      downloadYAMLFile(yamlContent);
+      
+      console.log(`Successfully exported ${modifiedEntries.length} modified camera entries`);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      setYamlExportError(errorMessage);
+      console.error('YAML export failed:', error);
+    }
+  };
+
+  // Calculate statistics using current modelMatches state
+  const totalCount = modelMatches.reduce((sum, result) => sum + result.count, 0);
+  const exactMatches = modelMatches.filter((r) => r.matchType === 'exact');
+  const potentialMatches = modelMatches.filter((r) => r.matchType === 'potential');
+  const identifiedMatches = modelMatches.filter((r) => r.matchType === 'identified');
+  const declinedMatches = modelMatches.filter((r) => r.matchType === 'declined');
+  const modifiedMatches = modelMatches.filter((r) => r.matchType === 'modified');
+  const noMatches = modelMatches.filter((r) => r.matchType === 'none');
+
+  // Calculate enhanced matches (additional info, not a match type)
+  const enhancedMatches = modelMatches.filter((r) => r.thirdPartyEnhanced);
+
   const exactMatchDeviceCount = exactMatches.reduce((sum, match) => sum + match.count, 0);
   const potentialMatchDeviceCount = potentialMatches.reduce((sum, match) => sum + match.count, 0);
+  const identifiedMatchDeviceCount = identifiedMatches.reduce((sum, match) => sum + match.count, 0);
+  const declinedMatchDeviceCount = declinedMatches.reduce((sum, match) => sum + match.count, 0);
+  const modifiedMatchDeviceCount = modifiedMatches.reduce((sum, match) => sum + match.count, 0);
+  const enhancedMatchDeviceCount = enhancedMatches.reduce((sum, match) => sum + match.count, 0);
   const noMatchDeviceCount = noMatches.reduce((sum, match) => sum + match.count, 0);
 
+  // Get modified entries for export button state
+  const modifiedCameraEntries = getModifiedCameraEntries(modelMatches);
+
+  /**
+   * Downloads the analysis results as a CSV file with updated format
+   */
   const downloadResults = () => {
     const csvContent = [
       [
-        'Original Model',
-        selection.countColumn ? selection.countColumn : 'Count',
+        'Customer Model',
+        'Count',
         'Match Type',
-        'Verkada Compatible Model',
+        'Manufacturer Name',
+        'Compatible Model',
         'Compatibility Type',
         'Minimum Firmware',
+        'Resolution (MP)',
+        'Channel Count',
         'Notes',
+        'Third Party Enhanced',
       ],
-      ...results.map((result) => [
-        result.model,
-        result.count.toString(),
-        result.matchType,
-        result.matchedWith || '',
-        result.compatibilityType || '',
-        result.verkadaDetails?.minimumFirmware || '',
-        result.verkadaDetails?.notes || '',
-      ]),
+      ...modelMatches.map((result) => {
+        const details = result.editedDetails;
+        return [
+          result.model,
+          result.count.toString(),
+          result.matchType,
+          details?.manufacturer || result.verkadaDetails?.manufacturer || '',
+          details?.modelName || result.matchedWith || '',
+          details?.integrationType || result.compatibilityType || '',
+          details?.minimumFirmware || result.verkadaDetails?.minimumFirmware || '',
+          details?.resolutionMp?.toString() || '',
+          details?.channelCount?.toString() || '',
+          details?.notes || result.verkadaDetails?.notes || '',
+          result.thirdPartyEnhanced ? 'Yes' : 'No',
+        ];
+      }),
     ]
       .map((row) => row.join(','))
       .join('\n');
@@ -331,29 +349,76 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
     URL.revokeObjectURL(url);
   };
 
-  const getMatchIcon = (matchType: 'exact' | 'potential' | 'none') => {
+  /**
+   * Returns appropriate icon for match type
+   */
+  const getMatchIcon = (matchType: string) => {
     switch (matchType) {
       case 'exact':
         return <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400" />;
       case 'potential':
         return <AlertTriangle className="w-4 h-4 text-yellow-600 dark:text-yellow-400" />;
+      case 'identified':
+        return <CheckCircle className="w-4 h-4 text-blue-600 dark:text-blue-400" />;
+      case 'declined':
+        return <X className="w-4 h-4 text-orange-600 dark:text-orange-400" />;
+      case 'modified':
+        return <Edit className="w-4 h-4 text-purple-600 dark:text-purple-400" />;
       case 'none':
         return <X className="w-4 h-4 text-red-600 dark:text-red-400" />;
+      default:
+        return null;
     }
   };
 
-  const getMatchColor = (matchType: 'exact' | 'potential' | 'none') => {
+  /**
+   * Returns CSS classes for match type styling
+   */
+  const getMatchColor = (matchType: string) => {
     switch (matchType) {
       case 'exact':
         return 'text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20';
       case 'potential':
         return 'text-yellow-600 dark:text-yellow-400 bg-yellow-50 dark:bg-yellow-900/20';
+      case 'identified':
+        return 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20';
+      case 'declined':
+        return 'text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20';
+      case 'modified':
+        return 'text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/20';
       case 'none':
         return 'text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20';
+      default:
+        return '';
     }
   };
 
-  const getCompatibilityTypeColor = (compatibilityType: 'RTSP' | 'ONVIF-S') => {
+  /**
+   * Returns human-readable match type label
+   */
+  const getMatchTypeLabel = (matchType: string) => {
+    switch (matchType) {
+      case 'exact':
+        return 'Exact';
+      case 'potential':
+        return 'Potential';
+      case 'identified':
+        return 'Identified';
+      case 'declined':
+        return 'Declined';
+      case 'modified':
+        return 'Modified';
+      case 'none':
+        return 'None';
+      default:
+        return matchType;
+    }
+  };
+
+  /**
+   * Returns CSS classes for compatibility type styling
+   */
+  const getCompatibilityTypeColor = (compatibilityType: CompatibilityType) => {
     switch (compatibilityType) {
       case 'RTSP':
         return 'text-orange-700 dark:text-orange-300 bg-orange-100 dark:bg-orange-900/30 border-orange-200 dark:border-orange-800';
@@ -446,105 +511,144 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
           </div>
         )}
 
-        <div className="flex items-center justify-center space-x-2 text-sm text-blue-600 dark:text-blue-400">
-          <Filter className="w-4 h-4" />
-          <span>
-            Camera Data has been cleaned to remove IP addresses, MAC addresses, dates, and common words.
-          </span>
+        <div className="flex items-center justify-center text-sm text-blue-600 dark:text-blue-400">
+          <ul className="space-y-1">
+            <li>- Camera Data has been cleaned to remove IP addresses, MAC addresses, dates, and common words.</li>
+            {thirdPartyCameras.length > 0 && (
+              <li>- This data has also been checked against observed third-party camera database containing {thirdPartyCameras.length} models.</li>
+            )}
+            <li>
+              For Usage Instructions review:{' '}
+              <a 
+                href="https://github.com/not-mehul/4C-Lite/blob/gh-pages/README.md" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-blue-700 dark:text-blue-300 hover:text-blue-800 dark:hover:text-blue-200 underline hover:no-underline transition-colors duration-200"
+              >
+                README.md
+              </a>
+            </li>
+          </ul>          
         </div>
       </div>
 
       {/* Enhanced Summary Cards */}
-      <div className="grid md:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 transition-colors duration-300">
+      <div className="grid md:grid-cols-5 gap-4 mb-8">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 transition-colors duration-300">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Models</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                {results.length.toLocaleString()}
+              <p className="text-xl font-bold text-gray-900 dark:text-white">
+                {modelMatches.length.toLocaleString()}
               </p>
-              <div className="mt-2 space-y-1">
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                  Total {selection.countColumn || 'Devices'}: {totalCount.toLocaleString()}
-                </p>
-              </div>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                {totalCount.toLocaleString()} {selection.countColumn || 'devices'}
+              </p>
             </div>
-            <BarChart className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+            <BarChart className="w-6 h-6 text-blue-600 dark:text-blue-400" />
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 transition-colors duration-300">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 transition-colors duration-300">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-green-600 dark:text-green-400">
-                Exact Matches
+              <p className="text-sm font-medium text-purple-600 dark:text-purple-400">Modified</p>
+              <p className="text-xl font-bold text-purple-600 dark:text-purple-400">
+                {modifiedMatches.length.toLocaleString()}
               </p>
-              <p className="text-2xl font-bold text-green-600 dark:text-green-400">
-                {exactMatches.length.toLocaleString()}
+              <p className="text-xs text-purple-600 dark:text-purple-400 font-medium">
+                {modifiedMatchDeviceCount.toLocaleString()} devices
               </p>
-              <div className="mt-2 space-y-1">
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                  {((exactMatches.length / results.length) * 100).toFixed(1)}% of models
-                </p>
-                <p className="text-xs text-green-600 dark:text-green-400 font-medium">
-                  {exactMatchDeviceCount.toLocaleString()} {selection.countColumn || 'devices'} ({((exactMatchDeviceCount / totalCount) * 100).toFixed(1)}%)
-                </p>
-              </div>
             </div>
-            <CheckCircle className="w-8 h-8 text-green-600 dark:text-green-400" />
+            <Edit className="w-6 h-6 text-purple-600 dark:text-purple-400" />
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 transition-colors duration-300">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 transition-colors duration-300">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-yellow-600 dark:text-yellow-400">
-                Potential Matches
+              <p className="text-sm font-medium text-green-600 dark:text-green-400">Exact</p>
+              <p className="text-xl font-bold text-green-600 dark:text-green-400">
+                {(exactMatches.length + identifiedMatches.length).toLocaleString()}
               </p>
-              <p className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
+              <p className="text-xs text-green-600 dark:text-green-400 font-medium">
+                {(exactMatchDeviceCount + identifiedMatchDeviceCount).toLocaleString()} devices
+              </p>
+            </div>
+            <CheckCircle className="w-6 h-6 text-green-600 dark:text-green-400" />
+          </div>
+        </div>
+
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 transition-colors duration-300">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-yellow-600 dark:text-yellow-400">Potential</p>
+              <p className="text-xl font-bold text-yellow-600 dark:text-yellow-400">
                 {potentialMatches.length.toLocaleString()}
               </p>
-              <div className="mt-2 space-y-1">
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                  {((potentialMatches.length / results.length) * 100).toFixed(1)}% of models
-                </p>
-                <p className="text-xs text-yellow-600 dark:text-yellow-400 font-medium">
-                  {potentialMatchDeviceCount.toLocaleString()} {selection.countColumn || 'devices'} ({((potentialMatchDeviceCount / totalCount) * 100).toFixed(1)}%)
-                </p>
-              </div>
+              <p className="text-xs text-yellow-600 dark:text-yellow-400 font-medium">
+                {potentialMatchDeviceCount.toLocaleString()} devices
+              </p>
             </div>
-            <AlertTriangle className="w-8 h-8 text-yellow-600 dark:text-yellow-400" />
+            <AlertTriangle className="w-6 h-6 text-yellow-600 dark:text-yellow-400" />
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 transition-colors duration-300">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 transition-colors duration-300">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-red-600 dark:text-red-400">No Matches</p>
-              <p className="text-2xl font-bold text-red-600 dark:text-red-400">
-                {noMatches.length.toLocaleString()}
+              <p className="text-xl font-bold text-red-600 dark:text-red-400">
+                {(noMatches.length + declinedMatches.length).toLocaleString()}
               </p>
-              <div className="mt-2 space-y-1">
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                  {((noMatches.length / results.length) * 100).toFixed(1)}% of models
-                </p>
-                <p className="text-xs text-red-600 dark:text-red-400 font-medium">
-                  {noMatchDeviceCount.toLocaleString()} {selection.countColumn || 'devices'} ({((noMatchDeviceCount / totalCount) * 100).toFixed(1)}%)
-                </p>
-              </div>
+              <p className="text-xs text-red-600 dark:text-red-400 font-medium">
+                {(noMatchDeviceCount + declinedMatchDeviceCount).toLocaleString()} devices
+              </p>
             </div>
-            <X className="w-8 h-8 text-red-600 dark:text-red-400" />
+            <X className="w-6 h-6 text-red-600 dark:text-red-400" />
           </div>
         </div>
       </div>
 
       {/* Results Table */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden mb-8 transition-colors duration-300">
-        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
+        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 flex justify-between items-center">
           <h3 className="text-lg font-medium text-gray-900 dark:text-white">
             Compatibility Results
           </h3>
+          
+          {/* Discrete YAML Export Button */}
+          {modifiedCameraEntries.length > 0 && (
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={handleYAMLExport}
+                className="flex items-center space-x-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 px-3 py-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 text-sm"
+                title={`Export ${modifiedCameraEntries.length} modified entries to YAML`}
+              >
+                <FileDown className="w-4 h-4" />
+                <span>Export Modified ({modifiedCameraEntries.length})</span>
+              </button>
+            </div>
+          )}
         </div>
+
+        {/* YAML Export Error Display */}
+        {yamlExportError && (
+          <div className="px-6 py-3 bg-red-50 dark:bg-red-900/20 border-b border-red-200 dark:border-red-800">
+            <div className="flex items-center space-x-2">
+              <AlertTriangle className="w-4 h-4 text-red-600 dark:text-red-400" />
+              <p className="text-red-800 dark:text-red-200 text-sm">
+                Export Error: {yamlExportError}
+              </p>
+              <button
+                onClick={() => setYamlExportError(null)}
+                className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-200"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        )}
 
         <div className="overflow-x-auto">
           <table className="w-full">
@@ -560,27 +664,22 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                   Match Status
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Integration Type
+                  Integration Protocol
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   {selection.countColumn || 'Count'}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Details
+                  Actions
                 </th>
               </tr>
             </thead>
             <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-              {results.map((result, index) => {
-                const percentage = ((result.count / totalCount) * 100).toFixed(
-                  1
-                );
+              {modelMatches.map((result, index) => {
+                const percentage = ((result.count / totalCount) * 100).toFixed(1);
                 const modelKey = `${result.model}-${index}`;
                 const isExpanded = expandedRows.has(modelKey);
-                const hasDetails =
-                  result.verkadaDetails &&
-                  (result.matchType === 'exact' ||
-                    result.matchType === 'potential');
+                const hasDetails = isDetailsExpansionAllowed(result);
 
                 return (
                   <React.Fragment key={modelKey}>
@@ -596,48 +695,51 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                             </span>
                           )}
                         </div>
-                        {result.removedElements &&
-                          result.removedElements.length > 0 && (
-                            <div
-                              className="text-xs text-gray-500 dark:text-gray-400 mt-1"
-                              title={result.removedElements.join(', ')}
-                            >
-                              Filtered: {result.removedElements.length} elements
-                            </div>
-                          )}
+                        {result.removedElements && result.removedElements.length > 0 && (
+                          <div
+                            className="text-xs text-gray-500 dark:text-gray-400 mt-1"
+                            title={result.removedElements.join(', ')}
+                          >
+                            Filtered: {result.removedElements.length} elements
+                          </div>
+                        )}
                       </td>
                       <td className="px-6 py-4">
-                        <div
-                          className="text-sm text-gray-900 dark:text-gray-100 max-w-xs"
-                          title={result.matchedWith}
-                        >
-                          {result.matchedWith || (
+                        <div className="text-sm text-gray-900 dark:text-gray-100 max-w-xs">
+                          {result.editedDetails?.modelName || result.matchedWith || (
                             <span className="text-gray-400 dark:text-gray-500">-</span>
                           )}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div
-                          className={`inline-flex items-center space-x-2 px-3 py-1 rounded-full text-xs font-medium ${getMatchColor(
-                            result.matchType
-                          )}`}
-                        >
-                          {getMatchIcon(result.matchType)}
-                          <span className="capitalize">
-                            {result.matchType === 'none'
-                              ? 'No Match'
-                              : result.matchType + ' Match'}
-                          </span>
+                        <div className="flex items-center space-x-2">
+                          <div
+                            className={`inline-flex items-center space-x-2 px-3 py-1 rounded-full text-xs font-medium ${getMatchColor(
+                              result.matchType
+                            )}`}
+                          >
+                            {getMatchIcon(result.matchType)}
+                            <span>{getMatchTypeLabel(result.matchType)}</span>
+                          </div>
+                          {result.thirdPartyEnhanced && (
+                            <span
+                              className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-teal-100 dark:bg-teal-900/40 text-teal-800 dark:text-teal-200"
+                              title="Enhanced with third-party database"
+                            >
+                              <Eye className="w-3 h-3 mr-1" />
+                              Observed
+                            </span>
+                          )}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        {result.compatibilityType ? (
+                        {(result.editedDetails?.integrationType || result.compatibilityType) ? (
                           <div
                             className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getCompatibilityTypeColor(
-                              result.compatibilityType
+                              result.editedDetails?.integrationType || result.compatibilityType!
                             )}`}
                           >
-                            {result.compatibilityType}
+                            {result.editedDetails?.integrationType || result.compatibilityType}
                           </div>
                         ) : (
                           <span className="text-gray-400 dark:text-gray-500 text-xs">-</span>
@@ -652,34 +754,72 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        {hasDetails ? (
-                          <button
-                            onClick={() => toggleRowExpansion(modelKey)}
-                            className="flex items-center space-x-1 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors duration-200"
-                            title="View compatibility details"
-                          >
-                            {isExpanded ? (
-                              <ChevronDown className="w-4 h-4" />
-                            ) : (
-                              <ChevronRight className="w-4 h-4" />
-                            )}
-                            <Info className="w-4 h-4" />
-                            <span className="text-xs font-medium">Details</span>
-                          </button>
-                        ) : (
-                          <span className="text-gray-400 dark:text-gray-500 text-xs">-</span>
-                        )}
+                        <div className="flex items-center space-x-2">
+                          {result.matchType === 'potential' ? (
+                            <MatchActionButtons
+                              onApprove={() => handleApproveMatch(result.id)}
+                              onDecline={() => handleDeclineMatch(result.id)}
+                            />
+                          ) : isEditingAllowed(result.matchType) ? (
+                            <>
+                              <button
+                                onClick={() => handleStartEdit(result.id)}
+                                className="p-2 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-md transition-colors duration-200 shadow-sm hover:shadow-md"
+                                title="Edit camera details"
+                              >
+                                <Edit className="w-4 h-4" />
+                              </button>
+                              
+                              {hasDetails && (
+                                <button
+                                  onClick={() => toggleRowExpansion(modelKey)}
+                                  className="p-2 text-gray-600 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/20 rounded-md transition-colors duration-200 shadow-sm hover:shadow-md"
+                                  title="View compatibility details"
+                                >
+                                  {isExpanded ? (
+                                    <ChevronDown className="w-4 h-4" />
+                                  ) : (
+                                    <ChevronRight className="w-4 h-4" />
+                                  )}
+                                </button>
+                              )}
+                            </>
+                          ) : (
+                            <span className="text-gray-400 dark:text-gray-500 text-xs">
+                              Locked until action taken
+                            </span>
+                          )}
+                        </div>
                       </td>
                     </tr>
 
+                    {/* Edit Form Row */}
+                    {result.isEditing && (
+                      <tr className="bg-blue-50 dark:bg-blue-900/20">
+                        <td colSpan={6} className="px-6 py-4">
+                          <CameraEditForm
+                            initialDetails={result.editedDetails || createDefaultCameraDetails(result)}
+                            onSave={(details) => handleSaveEdit(result.id, details)}
+                            onCancel={() => handleCancelEdit(result.id)}
+                          />
+                        </td>
+                      </tr>
+                    )}
+
                     {/* Expanded Details Row */}
-                    {isExpanded && hasDetails && result.verkadaDetails && (
+                    {isExpanded && hasDetails && (
                       <tr className="bg-blue-50 dark:bg-blue-900/20">
                         <td colSpan={6} className="px-6 py-4">
                           <div className="bg-white dark:bg-gray-800 rounded-lg border border-blue-200 dark:border-blue-700 p-4">
                             <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-3 flex items-center">
                               <Info className="w-4 h-4 text-blue-600 dark:text-blue-400 mr-2" />
-                              Verkada Compatibility Details
+                              Camera Configuration Details
+                              {result.thirdPartyEnhanced && (
+                                <span className="ml-2 inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-teal-100 dark:bg-teal-900/40 text-teal-800 dark:text-teal-200">
+                                  <Eye className="w-3 h-3 mr-1" />
+                                  Observed
+                                </span>
+                              )}
                             </h4>
                             <div className="grid md:grid-cols-2 gap-4">
                               <div>
@@ -687,8 +827,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                                   Manufacturer
                                 </label>
                                 <p className="text-sm text-gray-900 dark:text-gray-100 mt-1">
-                                  {result.verkadaDetails.manufacturer ||
-                                    'Not specified'}
+                                  {result.editedDetails?.manufacturer || result.verkadaDetails?.manufacturer || 'Not specified'}
                                 </p>
                               </div>
                               <div>
@@ -696,8 +835,7 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                                   Minimum Firmware Required
                                 </label>
                                 <p className="text-sm text-gray-900 dark:text-gray-100 mt-1">
-                                  {result.verkadaDetails.minimumFirmware ||
-                                    'Not specified'}
+                                  {result.editedDetails?.minimumFirmware || result.verkadaDetails?.minimumFirmware || 'Not specified'}
                                 </p>
                               </div>
                               <div>
@@ -707,46 +845,45 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                                 <div className="mt-1">
                                   <div
                                     className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getCompatibilityTypeColor(
-                                      result.compatibilityType!
+                                      result.editedDetails?.integrationType || result.compatibilityType!
                                     )}`}
                                   >
-                                    {result.compatibilityType}
+                                    {result.editedDetails?.integrationType || result.compatibilityType}
                                   </div>
                                 </div>
                               </div>
-                              {result.verkadaDetails.notes && (
+                              {/* Resolution (MP) Field */}
+                              {(result.editedDetails?.resolutionMp || result.editedDetails?.resolutionMp === 0) && (
+                                <div>
+                                  <label className="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+                                    Resolution (MP)
+                                  </label>
+                                  <p className="text-sm text-gray-900 dark:text-gray-100 mt-1">
+                                    {result.editedDetails.resolutionMp} MP
+                                  </p>
+                                </div>
+                              )}
+                              {/* Channel Count Field */}
+                              {result.editedDetails?.channelCount && (
+                                <div>
+                                  <label className="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+                                    Channel Count
+                                  </label>
+                                  <p className="text-sm text-gray-900 dark:text-gray-100 mt-1">
+                                    {result.editedDetails.channelCount} {result.editedDetails.channelCount === 1 ? 'channel' : 'channels'}
+                                  </p>
+                                </div>
+                              )}
+                              {(result.editedDetails?.notes || result.verkadaDetails?.notes) && (
                                 <div className="md:col-span-2">
                                   <label className="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">
                                     Notes & Additional Information
                                   </label>
                                   <p className="text-sm text-gray-900 dark:text-gray-100 mt-1 bg-gray-50 dark:bg-gray-700 p-3 rounded border border-gray-200 dark:border-gray-600">
-                                    {result.verkadaDetails.notes}
+                                    {result.editedDetails?.notes || result.verkadaDetails?.notes}
                                   </p>
                                 </div>
                               )}
-                              {result.similarity &&
-                                result.matchType === 'potential' && (
-                                  <div className="md:col-span-2">
-                                    <label className="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">
-                                      Match Confidence
-                                    </label>
-                                    <div className="flex items-center space-x-2 mt-1">
-                                      <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                                        <div
-                                          className="bg-yellow-500 dark:bg-yellow-400 h-2 rounded-full transition-all duration-500"
-                                          style={{
-                                            width: `${
-                                              result.similarity * 100
-                                            }%`,
-                                          }}
-                                        ></div>
-                                      </div>
-                                      <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                        {(result.similarity * 100).toFixed(1)}%
-                                      </span>
-                                    </div>
-                                  </div>
-                                )}
                             </div>
                           </div>
                         </td>
