@@ -37,7 +37,7 @@ Next, you'll see a preview of your data. Here, you need to tell the application 
       * If you don't select a **Count** column, the tool will simply count how many times each unique model appears in your list.
 3.  Once you've selected the **Model Column**, the "Analyze Data" button will become active. Click it to continue.
 
-![4C-Lite Web Application-Preview](./images/4CL-2.jpeg)
+![4C-Lite Web Application Preview](./images/4CL-2.jpeg)
 
 ### Step 3: Review and Manage Your Results
 
@@ -49,14 +49,11 @@ This is the final step, where you can see the full compatibility report.
 4.  **Advanced Review:** Any cameras marked as 'Observed' have previously been seen and would usually already have the Resolution (MP) and Channel Count. For any other cameras, you can click the "Edit" (pencil) icon to manually modify its details, such as integration type, resolution, channel count or even the model name.
 5.  **Export Your Report:** Once you're finished, you can download your results.
 
+![4C-Lite Web Application Results](./images/4CL-3.jpeg)
+
 [!TIP]
 If you encounter cameras that are not marked as 'Observed' or have incorrect information, when you edit these cameras with the appropriate Resolution(MP) and Channel count, you will see a 'Export Modified' button on the top, you can export the modified configuration as a YAML and share it with me and I can have it added to the gold standard configuration database.
-
------
-
-*\<p align="center"\>[Screenshot Placeholder: The analysis results page, showing the summary cards and the main results table with different match types.]\</p\>*
-
------
+![4C-Lite Web Application Results](./images/4CL-4.jpeg)
 
 ## Understanding the Match Types
 
