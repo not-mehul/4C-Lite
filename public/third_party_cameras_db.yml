@@ -737,3 +737,73 @@
   protocols:
     onvif-s: true
     rtsp: true
+- model: E-37-FSW
+  manufacturer: Advidia
+  resolution_mp: 3
+  channel_count: 1
+  aliases:
+    - E-37-F
+    - E-37-SW
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: VP-16-V2
+  manufacturer: Advidia
+  resolution_mp: 0
+  channel_count: 16
+  aliases:
+    - VP-16-V2 Video Encoder
+  protocols:
+    onvif-s: false
+    rtsp: true
+- model: VP-16
+  manufacturer: Advidia
+  resolution_mp: 0
+  channel_count: 16
+  aliases:
+    - VP-16 Video Encoder
+  protocols:
+    onvif-s: false
+    rtsp: true
+- model: B-31
+  manufacturer: Advidia
+  resolution_mp: 3
+  channel_count: 1
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: A-35
+  manufacturer: Advidia
+  resolution_mp: 3
+  channel_count: 1
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: WV-S8574L
+  manufacturer: Panasonic/i-PRO
+  resolution_mp: 8
+  channel_count: 4
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: WV-S4156
+  manufacturer: Panasonic/i-PRO
+  resolution_mp: 5
+  channel_count: 1
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: WV-S8531N
+  manufacturer: Panasonic/i-PRO
+  resolution_mp: 8
+  channel_count: 4
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: WV-S25500-V3L
+  manufacturer: Panasonic/i-PRO
+  resolution_mp: 5
+  channel_count: 1
+  protocols:
+    onvif-s: true
+    rtsp: true

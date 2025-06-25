@@ -82,7 +82,7 @@ const parseThirdPartyYAML = (yamlText: string): ThirdPartyCamera[] => {
 };
 
 /**
- * Finds matching third-party camera by cleaned model name with improved matching
+ * Finds matching third-party camera by cleaned model name with improved fuzzy matching
  * @param cleanedModelName Cleaned camera model name (without manufacturer prefix and noise)
  * @param thirdPartyCameras Array of third-party cameras to search in
  * @returns Matching camera object or undefined if not found
@@ -97,13 +97,30 @@ export const findThirdPartyMatch = (
 
   const searchModel = cleanedModelName.toLowerCase().trim();
 
-  return thirdPartyCameras.find(camera => {
+  // First pass: Exact matches
+  let match = thirdPartyCameras.find(camera => {
     const dbModel = camera.model.toLowerCase().trim();
     
     // Check exact model match
     if (dbModel === searchModel) {
       return true;
     }
+
+    // Check aliases for exact match
+    if (camera.aliases && camera.aliases.length > 0) {
+      return camera.aliases.some(alias => 
+        alias.toLowerCase().trim() === searchModel
+      );
+    }
+
+    return false;
+  });
+
+  if (match) return match;
+
+  // Second pass: Fuzzy matching with contains logic
+  match = thirdPartyCameras.find(camera => {
+    const dbModel = camera.model.toLowerCase().trim();
     
     // Check if the database model is contained in the search model
     if (searchModel.includes(dbModel)) {
@@ -115,18 +132,41 @@ export const findThirdPartyMatch = (
       return true;
     }
 
-    // Check aliases
+    // Check aliases with fuzzy matching
     if (camera.aliases && camera.aliases.length > 0) {
       return camera.aliases.some(alias => {
         const aliasLower = alias.toLowerCase().trim();
-        return aliasLower === searchModel ||
-               searchModel.includes(aliasLower) ||
+        return searchModel.includes(aliasLower) ||
                aliasLower.includes(searchModel);
       });
     }
 
     return false;
   });
+
+  if (match) return match;
+
+  // Third pass: More aggressive fuzzy matching for complex model names
+  match = thirdPartyCameras.find(camera => {
+    const dbModel = camera.model.toLowerCase().trim();
+    
+    // Split both models into parts and check for significant overlap
+    const searchParts = searchModel.split(/[-_\s]+/).filter(part => part.length > 1);
+    const dbParts = dbModel.split(/[-_\s]+/).filter(part => part.length > 1);
+    
+    // Check if most parts match
+    const matchingParts = searchParts.filter(searchPart => 
+      dbParts.some(dbPart => 
+        searchPart.includes(dbPart) || dbPart.includes(searchPart)
+      )
+    );
+    
+    // Consider it a match if at least 70% of parts match and we have at least 2 matching parts
+    const matchRatio = matchingParts.length / Math.max(searchParts.length, dbParts.length);
+    return matchingParts.length >= 2 && matchRatio >= 0.7;
+  });
+
+  return match;
 };
 
 /**
