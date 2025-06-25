@@ -44,10 +44,13 @@ Next, you'll see a preview of your data. Here, you need to tell the application 
 This is the final step, where you can see the full compatibility report.
 
 1.  **Review the Summary:** At the top, you'll see a summary of the analysis, including the total number of unique models and a breakdown of matches.
-2.  **Manage Potential Matches:** For any "Potential" matches, you can use the action buttons (✔️ to approve, ✖️ to decline) to confirm their status.
-3.  **Edit Camera Details:** For any camera, you can click the "Edit" (pencil) icon to manually modify its details, such as the manufacturer, integration type, or even the model name it should be matched with.
-4.  **View Details:** Click the expand icon (`>`) next to a camera to see more details, like firmware requirements and compatibility notes.
+2.  **Clear Potential Matches:** For any "Potential" matches, you can use the action buttons (✔️ to approve, ✖️ to decline) to confirm their match.
+3.  **Review Camera Details:** Click the expand icon (`>`) next to a camera to see more details, like firmware requirements and compatibility notes.
+4.  **Advanced Review:** Any cameras marked as 'Observed' have previously been seen and would usually already have the Resolution (MP) and Channel Count. For any other cameras, you can click the "Edit" (pencil) icon to manually modify its details, such as integration type, resolution, channel count or even the model name.
 5.  **Export Your Report:** Once you're finished, you can download your results.
+
+[!TIP]
+If you encounter cameras that are not marked as 'Observed' or have incorrect information, when you edit these cameras with the appropriate Resolution(MP) and Channel count, you will see a 'Export Modified' button on the top, you can export the modified configuration as a YAML and share it with me and I can have it added to the gold standard configuration database.
 
 -----
 
