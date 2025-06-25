@@ -21,6 +21,8 @@ First, you'll need a file containing a list of your camera models.
 3.  The application supports several common formats: **CSV**, **Excel** (`.xlsx`, `.xls`), **OpenDocument** (`.ods`), and **Apple Numbers** (`.numbers`).
 4.  Once uploaded, the tool will automatically validate and parse your file to proceed to the next step.
 
+![4C-Lite-Upload](./images/4CL-1,jpeg)
+
 ### Step 2: Preview Your Data & Select Columns
 
 Next, you'll see a preview of your data. Here, you need to tell the application which columns to use for the analysis.
@@ -30,6 +32,8 @@ Next, you'll see a preview of your data. Here, you need to tell the application 
       * If you select a **Count** column, the tool will group identical models and sum their quantities.
       * If you don't select a **Count** column, the tool will simply count how many times each unique model appears in your list.
 3.  Once you've selected the **Model Column**, the "Analyze Data" button will become active. Click it to continue.
+
+![4C-Lite-Preview](./images/4CL-2,jpeg)
 
 ### Step 3: Review and Manage Your Results
 
