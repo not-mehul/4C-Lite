@@ -1,0 +1,739 @@
+- model: A-15
+  manufacturer: Advidia
+  resolution_mp: 1.3
+  channel_count: 1
+  protocols:
+    onvif-s: false
+    rtsp: true
+- model: A-34
+  manufacturer: Advidia
+  resolution_mp: 3
+  channel_count: 1
+  aliases:
+    - A-34-W
+    - A-34W
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: A-37-F
+  manufacturer: Advidia
+  resolution_mp: 3
+  channel_count: 1
+  aliases:
+    - A-37-FW
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: B-5360
+  manufacturer: Advidia
+  resolution_mp: 5
+  channel_count: 1
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: M-45-FW
+  manufacturer: Advidia
+  resolution_mp: 4
+  channel_count: 1
+  aliases:
+    - M-45-FW-V2
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: M-46-V
+  manufacturer: Advidia
+  resolution_mp: 4
+  channel_count: 1
+  aliases:
+    - M-46-FW
+    - M-46-FW-V2
+    - M-46-F
+    - M-46-F-V2
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: M-49-V
+  manufacturer: Advidia
+  resolution_mp: 4
+  channel_count: 1
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: WV-U85402-V2L
+  manufacturer: Panasonic/i-PRO
+  resolution_mp: 4
+  channel_count: 2
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: A-47
+  manufacturer: Advidia
+  resolution_mp: 3
+  channel_count: 1
+  aliases:
+    - A-47-F
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: A-44-IR
+  manufacturer: Advidia
+  resolution_mp: 2
+  channel_count: 1
+  aliases:
+    - A-44-IR-V2
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: P3717-PLE
+  manufacturer: Axis Communications
+  resolution_mp: 2
+  channel_count: 4
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: P3807-LVE
+  manufacturer: Axis Communications
+  resolution_mp: 8.3
+  channel_count: 4
+  aliases:
+    - P3807-PVE
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: P3245-LV
+  manufacturer: Axis Communications
+  resolution_mp: 8
+  channel_count: 1
+  aliases:
+    - P3245-LVE
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: P3265
+  manufacturer: Axis Communications
+  resolution_mp: 2
+  channel_count: 1
+  aliases:
+    - P3265-LVE
+    - P3265-LV
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: P3727-PLE
+  manufacturer: Axis Communications
+  resolution_mp: 2
+  channel_count: 4
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: WV-SFN130
+  manufacturer: Panasonic/i-PRO
+  resolution_mp: 2
+  channel_count: 1
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: M4206-LV
+  manufacturer: Axis Communications
+  resolution_mp: 3
+  channel_count: 1
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: A-46
+  manufacturer: Advidia
+  resolution_mp: 4
+  channel_count: 1
+  aliases:
+    - A-46-FW
+    - A-46-F
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: LNV-6032R
+  manufacturer: Hanwa
+  resolution_mp: 2
+  channel_count: 1
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: LNV-6022R
+  manufacturer: Hanwa
+  resolution_mp: 2
+  channel_count: 1
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: QNV-7080R
+  manufacturer: Hanwa
+  resolution_mp: 4
+  channel_count: 1
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: WV-S3131L
+  manufacturer: Panasonic/i-PRO
+  resolution_mp: 2
+  channel_count: 1
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: A-27-F
+  manufacturer: Advidia
+  resolution_mp: 2
+  channel_count: 1
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: UVC-G3-Dome
+  manufacturer: Ubiquity
+  resolution_mp: 4
+  channel_count: 1
+  protocols:
+    onvif-s: false
+    rtsp: true
+- model: P3344
+  manufacturer: Axis Communications
+  resolution_mp: 1
+  channel_count: 1
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: P3354
+  manufacturer: Axis Communications
+  resolution_mp: 1
+  channel_count: 1
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: P3364
+  manufacturer: Axis Communications
+  resolution_mp: 1
+  channel_count: 1
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: Q1755
+  manufacturer: Axis Communications
+  resolution_mp: 2
+  channel_count: 1
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: M3045-V
+  manufacturer: Axis Communications
+  resolution_mp: 2
+  channel_count: 1
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: P3225-V
+  manufacturer: Axis Communications
+  resolution_mp: 2
+  channel_count: 1
+  aliases:
+    - P3225-LVE
+    - P3225-LVE Mk II
+    - P3225-V Mk II
+    - P3225-VE Mk II
+    - P3225-LV Mk II
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: M4216-V
+  manufacturer: Axis Communications
+  resolution_mp: 4
+  channel_count: 1
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: M3027
+  manufacturer: Axis Communications
+  resolution_mp: 5
+  channel_count: 1
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: PNM-9080VQ
+  manufacturer: Hanwa
+  resolution_mp: 2
+  channel_count: 4
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: PNM-7002VD
+  manufacturer: Hanwa
+  resolution_mp: 2
+  channel_count: 2
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: E-37-V
+  manufacturer: Advidia
+  resolution_mp: 3
+  channel_count: 1
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: WV-S8543L
+  manufacturer: Panasonic/i-PRO
+  resolution_mp: 4
+  channel_count: 3
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: PNM-9000VD
+  manufacturer: Hanwa
+  resolution_mp: 5
+  channel_count: 2
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: A-87-V
+  manufacturer: Advidia
+  resolution_mp: 8
+  channel_count: 1
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: QNV-8080R
+  manufacturer: Hanwa
+  resolution_mp: 5
+  channel_count: 1
+  aliases:
+    - QND-8080R
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: WV-S8573L
+  manufacturer: Panasonic/i-PRO
+  resolution_mp: 8
+  channel_count: 3
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: A-88-V
+  manufacturer: Advidia
+  resolution_mp: 8
+  channel_count: 1
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: A-427-V
+  manufacturer: Advidia
+  resolution_mp: 8
+  channel_count: 4
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: A-64
+  manufacturer: Advidia
+  resolution_mp: 6
+  channel_count: 1
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: M3065-V
+  manufacturer: Axis Communications
+  resolution_mp: 3
+  channel_count: 1
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: P3248-LVE
+  manufacturer: Axis Communications
+  resolution_mp: 8
+  channel_count: 1
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: M3068-P
+  manufacturer: Axis Communications
+  resolution_mp: 12
+  channel_count: 1
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: P3719-PLE
+  manufacturer: Axis Communications
+  resolution_mp: 4
+  channel_count: 4
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: P3247-LVE
+  manufacturer: Axis Communications
+  resolution_mp: 5
+  channel_count: 1
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: WV-S2131L
+  manufacturer: Panasonic/i-PRO
+  resolution_mp: 2
+  channel_count: 1
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: WV-S1111
+  manufacturer: Panasonic/i-PRO
+  resolution_mp: 1.3
+  channel_count: 1
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: WV-S1531LN
+  manufacturer: Panasonic/i-PRO
+  resolution_mp: 2
+  channel_count: 1
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: A-55
+  manufacturer: Advidia
+  resolution_mp: 3
+  channel_count: 1
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: WV-S15500-V3L
+  manufacturer: Panasonic/i-PRO
+  resolution_mp: 5
+  channel_count: 1
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: A-54-V2
+  manufacturer: Advidia
+  resolution_mp: 3
+  channel_count: 1
+  aliases:
+    - A-54-OD
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: M3204
+  manufacturer: Axis Communications
+  resolution_mp: 1
+  channel_count: 1
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: P1357
+  manufacturer: Axis Communications
+  resolution_mp: 5
+  channel_count: 1
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: DS-2CD2132
+  manufacturer: Hikvision
+  resolution_mp: 3
+  channel_count: 1
+  aliases:
+    - DS-2CD2132F-I
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: E-47-V
+  manufacturer: Advidia
+  resolution_mp: 4
+  channel_count: 1
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: A-45
+  manufacturer: Advidia
+  resolution_mp: 4
+  channel_count: 1
+  aliases:
+    - A-45-F
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: E-46-V
+  manufacturer: Advidia
+  resolution_mp: 4
+  channel_count: 1
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: A-14
+  manufacturer: Advidia
+  resolution_mp: 1.3
+  channel_count: 1
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: A-38-F
+  manufacturer: Advidia
+  resolution_mp: 3
+  channel_count: 1
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: A-49-F
+  manufacturer: Advidia
+  resolution_mp: 4
+  channel_count: 1
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: WV-S1536LT
+  manufacturer: Panasonic/i-PRO
+  resolution_mp: 2
+  channel_count: 1
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: WV-S8530N
+  manufacturer: Panasonic/i-PRO
+  resolution_mp: 8
+  channel_count: 4
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: WV-S15700-V2LN
+  manufacturer: Panasonic/i-PRO
+  resolution_mp: 8
+  channel_count: 1
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: WV-X8570N
+  manufacturer: Panasonic/i-PRO
+  resolution_mp: 8
+  channel_count: 4
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: A-17-F
+  manufacturer: Advidia
+  resolution_mp: 1.3
+  channel_count: 1
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: WV-X8571N
+  manufacturer: Panasonic/i-PRO
+  resolution_mp: 8
+  channel_count: 4
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: B-33
+  manufacturer: Advidia
+  resolution_mp: 4
+  channel_count: 1
+  protocols:
+    onvif-s: false
+    rtsp: true
+- model: WV-X2251L
+  manufacturer: Panasonic/i-PRO
+  resolution_mp: 5
+  channel_count: 1
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: WV-S2536L
+  manufacturer: Panasonic/i-PRO
+  resolution_mp: 2
+  channel_count: 1
+  aliases:
+    - WV-S2536LT
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: WV-S25700-V2L
+  manufacturer: Panasonic/i-PRO
+  resolution_mp: 8
+  channel_count: 1
+  aliases:
+    - WV-S25700-V2LN
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: WV-U2140LA
+  manufacturer: Panasonic/i-PRO
+  resolution_mp: 4
+  channel_count: 1
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: WV-S8544L
+  manufacturer: Panasonic/i-PRO
+  resolution_mp: 4
+  channel_count: 4
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: WV-S4151
+  manufacturer: Panasonic/i-PRO
+  resolution_mp: 5
+  channel_count: 1
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: WV-X2551LN
+  manufacturer: Panasonic/i-PRO
+  resolution_mp: 5
+  channel_count: 1
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: WV-S4576L
+  manufacturer: Panasonic/i-PRO
+  resolution_mp: 12
+  channel_count: 1
+  aliases:
+    - WV-S4576LA
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: WV-U2542LA
+  manufacturer: Panasonic/i-PRO
+  resolution_mp: 4
+  channel_count: 1
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: WV-S4551L
+  manufacturer: Panasonic/i-PRO
+  resolution_mp: 5
+  channel_count: 1
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: TCM-3111
+  manufacturer: ACTi
+  resolution_mp: 1.3
+  channel_count: 1
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: ACM-7411
+  manufacturer: ACTi
+  resolution_mp: 1.3
+  channel_count: 1
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: TCM-3511
+  manufacturer: ACTi
+  resolution_mp: 1.3
+  channel_count: 1
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: B-58-V
+  manufacturer: Advidia
+  resolution_mp: 5
+  channel_count: 1
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: M3004
+  manufacturer: Axis Communications
+  resolution_mp: 1
+  channel_count: 1
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: M3024-L
+  manufacturer: Axis Communications
+  resolution_mp: 1
+  channel_count: 1
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: M3005
+  manufacturer: Axis Communications
+  resolution_mp: 2
+  channel_count: 1
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: M3014
+  manufacturer: Axis Communications
+  resolution_mp: 1
+  channel_count: 1
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: Q1615 Mk II
+  manufacturer: Axis Communications
+  resolution_mp: 2
+  channel_count: 1
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: M3048-P
+  manufacturer: Axis Communications
+  resolution_mp: 12
+  channel_count: 1
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: M-87-V
+  manufacturer: Advidia
+  resolution_mp: 8
+  channel_count: 1
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: WV-85702-F3L
+  manufacturer: Panasonic/i-PRO
+  resolution_mp: 8
+  channel_count: 2
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: M-44-V-T
+  manufacturer: Advidia
+  resolution_mp: 4
+  channel_count: 1
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: WV-S85402-V2L
+  manufacturer: Panasonic/i-PRO
+  resolution_mp: 4
+  channel_count: 2
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: WV-X86530-Z2
+  manufacturer: Panasonic/i-PRO
+  resolution_mp: 5
+  channel_count: 3
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: ALI-NS4114R
+  manufacturer: Alibi
+  resolution_mp: 4
+  channel_count: 1
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: ALI-XB20-VUZAI-ANPR
+  manufacturer: Alibi
+  resolution_mp: 2
+  channel_count: 1
+  protocols:
+    onvif-s: false
+    rtsp: true
+- model: ALI-NS1006VRP
+  manufacturer: Alibi
+  resolution_mp: 6
+  channel_count: 1
+  protocols:
+    onvif-s: true
+    rtsp: true
+- model: ALI-FB41-UZA
+  manufacturer: Alibi
+  resolution_mp: 4
+  channel_count: 1
+  protocols:
+    onvif-s: true
+    rtsp: true
